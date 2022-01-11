@@ -20,6 +20,7 @@ class UserModel extends Model
 
     public function getUser($params)
     {
+
         $sql = sprintf("SELECT * FROM user WHERE %s = '%s'",
             $params[0],
             $params[1],
@@ -27,4 +28,23 @@ class UserModel extends Model
 
         return $this->pdo->query($sql)->fetch();
     }
+
+    public function insert()
+    {
+        $data = [
+            'username' => $this->username,
+            'email' => $this->email,
+            'password' => $this->password,
+            'role' => 'user',
+            'api_key' => implode('-', str_split(substr(strtolower(md5(microtime() . rand(1000, 9999))), 0, 30), 6)),
+        ];
+
+        $sql = "INSERT INTO user (username, email, password, role, api_key) VALUES (:username, :email, :password, :role, :api_key)";
+
+        $this->pdo->prepare($sql)->execute($data);
+
+        return $this->pdo->lastInsertId();
+    }
+
+
 }
