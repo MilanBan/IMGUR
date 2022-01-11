@@ -1,0 +1,10 @@
+{
+    "name": "thinkpad/imgur",
+    "authors": [
+        {
+            "name": "Milan Bancevic",
+            "email": "m.bancevic@gmail.com"
+        }
+    ],
+    "require": {}
+}
