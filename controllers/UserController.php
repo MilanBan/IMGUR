@@ -16,7 +16,7 @@ class UserController extends Controller
 
     public function user()
     {
-        $user = $this->userM->getUser();
+        $user = $this->userM->getUser(['id', 1]);
 
         $this->renderVidew('home', ['user' => $user]);
     }
