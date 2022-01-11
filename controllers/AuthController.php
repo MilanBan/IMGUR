@@ -3,7 +3,6 @@
 namespace app\controllers;
 
 use app\models\UserModel;
-use http\Client\Curl\User;
 
 class AuthController extends Controller
 {
@@ -17,8 +16,14 @@ class AuthController extends Controller
             $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
             $userM = new UserModel('', trim($_POST['email']), trim($_POST['password']), '');
+            $errors = $userM->validate('login');
 
-            $user = $userM->getUser('email',$userM->email);
+            if (count($errors)){
+                http_response_code(422);
+                $this->renderVidew('auth/login', ['errors' => $errors, 'user' => $userM]);
+            }
+
+            $user = $userM->getUser(['email', $userM->email]);
 
             $this->renderVidew('home', ['user' => $user]);
         }
@@ -32,15 +37,17 @@ class AuthController extends Controller
 
         if (isset($_POST['username']) && isset($_POST['email']) && isset($_POST['password']) && isset($_POST['confirm_password'])) {
             $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
-
             $userM = new UserModel(trim($_POST['username']), trim($_POST['email']), trim($_POST['password']), trim($_POST['confirm_password']));
+            $errors = $userM->validate('register');
 
-            $userID = $userM->insert();
-
-            $user = $userM->getUser(['id', $userID]);
-
-            $this->renderVidew('home', ['user' => $user]);
-
+            if (count($errors)){
+                http_response_code(422);
+                $this->renderVidew('auth/register', ['errors' => $errors, 'user' => $userM]);
+            }else{
+                $userID = $userM->insert();
+                $user = $userM->getUser(['id', $userID]);
+                $this->renderVidew('home', ['user' => $user]);
+            }
         }
     }
 }
