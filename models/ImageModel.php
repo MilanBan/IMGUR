@@ -16,7 +16,7 @@ class ImageModel extends Model
 
     public function getTotal()
     {
-        $sql = "SELECT count(*) as 'total' FROM image";
+        $sql = "SELECT count(*) as 'total' FROM image WHERE `hidden` = 0 AND `nsfw` = 0";
 
         return $this->pdo->query($sql)->fetch();
     }

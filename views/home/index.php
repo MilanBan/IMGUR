@@ -4,8 +4,6 @@ use app\models\Session;
 
 ?>
 
-
-
 <div class="d-flex flex-wrap justify-content-center">
     <h1><?= Session::getFlash('welcome') ?></h1>
 </div>
@@ -15,7 +13,7 @@ use app\models\Session;
                 <div class="m-3 align-self-center">
                     <div class="d-flex m-3">
                         <?php if (Session::get('user')) : ?>
-                            <a class="mx-auto" href="http://localhost:8080/images/<?= $image->slug ?> ">
+                            <a class="mx-auto" href="/images/<?= $image->slug ?> ">
                         <?php else: ?>
                             <a class="mx-auto" href="/login">
                         <?php endif; ?>

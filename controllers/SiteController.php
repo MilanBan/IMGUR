@@ -29,7 +29,7 @@ class SiteController extends Controller
             'start' => $start,
             'total' => $total,
             'pages' => $pages,
-            'url' => '/home'
+            'url' => '/imgur'
         ];
 
         $images = $this->imageM->getAll($start, $prePage);
