@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Session;
 use app\models\UserModel;
 
 class AuthController extends Controller
@@ -9,7 +10,7 @@ class AuthController extends Controller
     public function login()
     {
         if (strtolower($_SERVER['REQUEST_METHOD']) === 'get'){
-            $this->renderVidew('auth/login');
+            $this->renderView('auth/login');
         }
 
         if (isset($_POST['email']) && isset($_POST['password'])){
@@ -20,19 +21,19 @@ class AuthController extends Controller
 
             if (count($errors)){
                 http_response_code(422);
-                $this->renderVidew('auth/login', ['errors' => $errors, 'user' => $userM]);
+                $this->renderView('auth/login', ['errors' => $errors, 'user' => $userM]);
+            }else{
+                $user = $userM->getUser(['email', $userM->email]);
+                Session::set('user', $user);
+                $this->redirect('home');
             }
-
-            $user = $userM->getUser(['email', $userM->email]);
-
-            $this->renderVidew('home', ['user' => $user]);
         }
     }
 
     public function register()
     {
         if (strtolower($_SERVER['REQUEST_METHOD']) === 'get'){
-            $this->renderVidew('auth/register');
+            $this->renderView('auth/register');
         }
 
         if (isset($_POST['username']) && isset($_POST['email']) && isset($_POST['password']) && isset($_POST['confirm_password'])) {
@@ -42,12 +43,20 @@ class AuthController extends Controller
 
             if (count($errors)){
                 http_response_code(422);
-                $this->renderVidew('auth/register', ['errors' => $errors, 'user' => $userM]);
+                $this->renderView('auth/register', ['errors' => $errors, 'user' => $userM]);
             }else{
                 $userID = $userM->insert();
                 $user = $userM->getUser(['id', $userID]);
-                $this->renderVidew('home', ['user' => $user]);
+                Session::set('user', $user);
+                $this->redirect('home');
             }
         }
+    }
+
+    public function logout()
+    {
+        $userM = new UserModel();
+        $userM->deleteSession();
+        $this->redirect('home');
     }
 }

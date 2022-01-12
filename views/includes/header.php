@@ -10,7 +10,7 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-md navbar-light bg-light">
-    <a class="navbar-brand" href="/"><strong>IMGUR</strong></a>
+    <a class="navbar-brand" href="/home"><strong>IMGUR</strong></a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -21,6 +21,11 @@
             </li>
             <li class="nav-item active">
                 <a class="nav-link" href="/register">Register</a>
+            </li>
+        </ul>
+        <ul class="navbar-nav my-2 my-lg-0">
+            <li class="nav-item active">
+                <a class="nav-link" href="/logout">Logout</a>
             </li>
         </ul>
     </div>
