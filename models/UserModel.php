@@ -29,6 +29,23 @@ class UserModel extends Model
         return $this->pdo->query($sql)->fetch();
     }
 
+    public function getAll($start, $prePage)
+    {
+        if (in_array(Session::get('user')->role, ['admin', 'moderator'])){
+            $sql = sprintf("SELECT * FROM `user` LIMIT %s, %s",
+                $start,
+                $prePage
+            );
+        }else{
+            $sql = sprintf("SELECT * FROM `user` WHERE `active` = 1 AND `nsfw` = 0 LIMIT %s, %s",
+                $start,
+                $prePage
+            );
+        }
+
+        return $this->pdo->query($sql)->fetchAll();
+    }
+
     public function insert()
     {
         $data = [
@@ -44,6 +61,17 @@ class UserModel extends Model
         $this->pdo->prepare($sql)->execute($data);
 
         return $this->pdo->lastInsertId();
+    }
+
+    public function getTotal()
+    {
+        if (in_array(Session::get('user')->role, ['admin', 'moderator'])) {
+            $sql = "SELECT count(*) as 'total' FROM user";
+        }else{
+            $sql = "SELECT count(*) as 'total' FROM user WHERE `active` = 1 AND `nsfw` = 0";
+        }
+
+        return $this->pdo->query($sql)->fetch();
     }
 
     public function validate($mode = []): array
@@ -122,6 +150,7 @@ class UserModel extends Model
             $this->errors['$this->confirm_password'] = 'Password did not match. Please try again.';
         }
     }
+
 
 
 }
