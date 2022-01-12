@@ -25,7 +25,8 @@ class AuthController extends Controller
             }else{
                 $user = $userM->getUser(['email', $userM->email]);
                 Session::set('user', $user);
-                $this->redirect('home');
+                Session::setFlash('welcome', '<small>Welcome back</small> '.$user->username);
+                $this->redirect('imgur');
             }
         }
     }
@@ -48,7 +49,8 @@ class AuthController extends Controller
                 $userID = $userM->insert();
                 $user = $userM->getUser(['id', $userID]);
                 Session::set('user', $user);
-                $this->redirect('home');
+                Session::setFlash('welcome', '<small>Welcome</small> '.$user->username);
+                $this->redirect('imgur');
             }
         }
     }
@@ -57,6 +59,6 @@ class AuthController extends Controller
     {
         $userM = new UserModel();
         $userM->deleteSession();
-        $this->redirect('home');
+        $this->redirect('imgur');
     }
 }

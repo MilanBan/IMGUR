@@ -1,3 +1,6 @@
+<?php
+use app\models\Session;
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -10,24 +13,51 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-md navbar-light bg-light">
-    <a class="navbar-brand" href="/home"><strong>IMGUR</strong></a>
+    <a class="navbar-brand" href="/imgur"><strong>IMGUR</strong></a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
+
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav my-2 my-lg-0">
-            <li class="nav-item active">
-                <a class="nav-link" href="/login">Login <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item active">
-                <a class="nav-link" href="/register">Register</a>
-            </li>
+        <ul class="navbar-nav mr-auto">
+            <?php if (Session::get('user')): ?>
+                <li class="nav-item <?= ($_SERVER['REQUEST_URI'] == '/imgur/galleries') ? 'active' : '' ?>">
+                    <a class="nav-link" href="/imgur/galleries">Galleries </a>
+                </li>
+                <li class="nav-item <?= ($_SERVER['REQUEST_URI'] == '/imgur/profiles') ? 'active' : '' ?>">
+                    <a class="nav-link" href="/imgur/profiles">Profiles </a>
+                </li>
+            <?php endif; ?>
         </ul>
         <ul class="navbar-nav my-2 my-lg-0">
-            <li class="nav-item active">
-                <a class="nav-link" href="/logout">Logout</a>
-            </li>
+            <?php if (Session::get('user')): ?>
+                <div class="dropdown">
+                    <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <?= Session::get('user')->username ?>
+                        <?php if(Session::get('user')->role == 'admin') : ?>
+                            <small>(A)</small>
+                        <?php elseif (Session::get('user')->role == 'moderator') : ?>
+                            <small>(M)</small>
+                        <?php endif; ?>
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" href="#">Profile </a>
+                        <a class="dropdown-item" href="/logout">Logout</a>
+                    </div>
+                </div>
+            <?php else: ?>
+                <li class="nav-item active">
+                    <?php if ($_SERVER['REQUEST_URI'] !== '/login'): ?>
+                        <a class="nav-link" href="/login">Login</a>
+                    <?php endif ?>
+                </li>
+                <li class="nav-item active">
+                    <?php if ($_SERVER['REQUEST_URI'] !== '/register'): ?>
+                        <a class="nav-link" href="/register">Register</a>
+                    <?php endif ?>
+                </li>
+            <?php endif ?>
         </ul>
     </div>
 </nav>
-<div class="container-fluid m-5">
+<div class="container-fluid">
