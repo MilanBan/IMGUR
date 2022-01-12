@@ -21,6 +21,23 @@ class GalleryModel extends Model
         return $this->pdo->query($sql)->fetchAll();
     }
 
+    public function find($slug)
+    {
+        if (in_array(Session::get('user')->role, ['admin', 'moderator'])){
+            $sql = sprintf("SELECT * FROM `gallery` WHERE `slug` = '%s'",
+                $slug
+            );
+        }else{
+            $sql = sprintf("SELECT * FROM `gallery` WHERE `slug` = '%s' AND `hidden` = 0 AND `nsfw` = 0",
+                $slug
+            );
+        }
+
+        return $this->pdo->query($sql)->fetch();
+    }
+
+
+//helper
     public function getTotal()
     {
         if (in_array(Session::get('user')->role, ['admin', 'moderator'])) {

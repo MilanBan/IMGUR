@@ -7,7 +7,7 @@ use app\models\Session;
 <div class="d-flex flex-wrap justify-content-center">
     <?php if (isset($data['galleries'])) : ?>
         <?php foreach ($data['galleries'] as $gallery) : ?>
-            <a href="#">
+            <a href="/imgur/galleries/<?= $gallery->slug ?>">
             <div class="card m-1 border border-primary" style="width: 16rem;">
                 <img class="card-img-top" src="<?= $data['cover'][$gallery->id] ?>" alt="Card image cap">
                 <div class="card-body">
