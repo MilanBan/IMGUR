@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Session;
 use app\models\UserModel;
 
 class UserController extends Controller
@@ -16,8 +17,8 @@ class UserController extends Controller
 
     public function user()
     {
-        $user = $this->userM->getUser();
+        $user = $this->userM->getUser(['id', Session::get('user')->id]);
 
-        $this->renderVidew('home', ['user' => $user]);
+        $this->renderView('home', ['user' => $user]);
     }
 }
