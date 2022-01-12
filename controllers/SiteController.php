@@ -34,6 +34,16 @@ class SiteController extends Controller
 
         $images = $this->imageM->getAll($start, $prePage);
 
-        return $this->renderView('home/index', ['images' => $images, 'pagination' => $pagination]);
+        $this->renderView('home/index', ['images' => $images, 'pagination' => $pagination]);
+    }
+
+    public function galleries()
+    {
+        $this->renderView('home/galleries');
+    }
+
+    public function profiles()
+    {
+        $this->renderView('home/profiles');
     }
 }

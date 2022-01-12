@@ -25,6 +25,7 @@ class AuthController extends Controller
             }else{
                 $user = $userM->getUser(['email', $userM->email]);
                 Session::set('user', $user);
+                Session::setFlash('welcome', '<small>Welcome back</small> '.$user->username);
                 $this->redirect('imgur');
             }
         }
@@ -48,6 +49,7 @@ class AuthController extends Controller
                 $userID = $userM->insert();
                 $user = $userM->getUser(['id', $userID]);
                 Session::set('user', $user);
+                Session::setFlash('welcome', '<small>Welcome</small> '.$user->username);
                 $this->redirect('imgur');
             }
         }

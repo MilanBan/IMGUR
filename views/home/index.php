@@ -6,14 +6,13 @@ use app\models\Session;
 
 
 
-
-<h1> Welcome d <?= $data['user']->username ?> </h1>
-<h1> Welcome s <?= \app\models\Session::get('user')->username ?> </h1>
-
+<div class="d-flex flex-wrap justify-content-center">
+    <h1><?= Session::getFlash('welcome') ?></h1>
+</div>
     <div class="d-flex flex-wrap justify-content-center">
         <?php if (isset($data['images'])) : ?>
             <?php foreach ($data['images'] as $image) : ?>
-                <div class="d-flex flex-column">
+                <div class="m-3 align-self-center">
                     <div class="d-flex m-3">
                         <?php if (Session::get('user')) : ?>
                             <a class="mx-auto" href="http://localhost:8080/images/<?= $image->slug ?> ">

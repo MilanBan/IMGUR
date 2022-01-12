@@ -1,0 +1,5 @@
+<?php
+
+?>
+
+<h1>PROFILE PAGE</h1>
