@@ -7,12 +7,12 @@ class GalleryModel extends Model
     public function getAll($start, $prePage)
     {
         if (in_array(Session::get('user')->role, ['admin', 'moderator'])){
-            $sql = sprintf("SELECT * FROM `gallery` LIMIT %s, %s",
+            $sql = sprintf("SELECT * FROM `gallery` ORDER BY `id` DESC LIMIT %s, %s",
                 $start,
                 $prePage
             );
         }else{
-            $sql = sprintf("SELECT * FROM `gallery` WHERE `hidden` = 0 AND `nsfw` = 0 LIMIT %s, %s",
+            $sql = sprintf("SELECT * FROM `gallery` WHERE `hidden` = 0 AND `nsfw` = 0 ORDER BY `id` DESC  LIMIT %s, %s",
                 $start,
                 $prePage
             );
@@ -21,15 +21,17 @@ class GalleryModel extends Model
         return $this->pdo->query($sql)->fetchAll();
     }
 
-    public function find($slug)
+    public function getGallery($params)
     {
         if (in_array(Session::get('user')->role, ['admin', 'moderator'])){
-            $sql = sprintf("SELECT * FROM `gallery` WHERE `slug` = '%s'",
-                $slug
+            $sql = sprintf("SELECT * FROM `gallery` WHERE `%s` = '%s'",
+                $params[0],
+                $params[1]
             );
         }else{
-            $sql = sprintf("SELECT * FROM `gallery` WHERE `slug` = '%s' AND `hidden` = 0 AND `nsfw` = 0",
-                $slug
+            $sql = sprintf("SELECT * FROM `gallery` WHERE `%s` = '%s' AND `hidden` = 0 AND `nsfw` = 0",
+                $params[0],
+                $params[1]
             );
         }
 
@@ -38,10 +40,12 @@ class GalleryModel extends Model
 
 
 //helper
-    public function getTotal()
+    public function getTotal($user_id = null)
     {
-        if (in_array(Session::get('user')->role, ['admin', 'moderator'])){              // Site - galleries
+        if (in_array(Session::get('user')->role, ['admin', 'moderator']) && $user_id == null) {              // Site - galleries
             $sql = "SELECT count(*) as 'total' FROM gallery";
+        }elseif ($user_id !== null){
+            $sql = "SELECT count(*) as 'total' FROM gallery WHERE user_id = $user_id";
         }else{                                                                          // Site - galleries
             $sql = "SELECT count(*) as 'total' FROM gallery WHERE `hidden` = 0 AND `nsfw` = 0";
         }
@@ -78,5 +82,28 @@ class GalleryModel extends Model
         }catch (\PDOException $e){
             return false;
         }
+    }
+
+    public function getGalleryByImage($id)
+    {
+        $sql = "SELECT g.`name`, g.`slug` FROM `gallery` g INNER JOIN `image_gallery` ig ON g.`id` = ig.`gallery_id` WHERE ig.`image_id` = $id";
+
+        return $this->pdo->query($sql)->fetch();
+    }
+
+    public function delete()
+    {
+        var_dump('delete');
+    }
+
+    public function getGalleriesForUser($id, $start, $prePage)
+    {
+        $sql = sprintf("SELECT * FROM gallery WHERE user_id = %s ORDER BY id DESC LIMIT %s, %s",
+            $id,
+            $start,
+            $prePage
+        );
+
+        return $this->pdo->query($sql)->fetchAll();
     }
 }

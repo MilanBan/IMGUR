@@ -19,8 +19,8 @@ $url =  $data['pagination']['url'] ?? $data['pagination']['gallery']['url'];
             <li class="page-item"><a class="page-link" href="<?= $url ?>?page=<?= ($page==1) ? $page+1 : (($page == $pages) ? $page-1 : $page) ?>"><?= ($page==1) ? $page+1 : (($page == $pages) ? $page-1 : $page) ?></a></li>
             <li class="page-item <?= ($page == $pages) ? 'disabled' : '' ?>"><a class="page-link" href="<?= $url ?>?page=<?= ($page==1) ? $page+2 : (($page == $pages) ? $page : $page+1) ?>"><?= ($page==1) ? $page+2 : (($page == $pages) ? $page : $page+1) ?></a></li>
             <?php if($page < $pages): ?>
-            <li class="page-item <?= ($page == $pages) ? 'disabled' : '' ?>"><a class="page-link" href="<?= $url ?>?page=<?= $page+1 ?>"> > </a></li>
-            <li class="page-item <?= ($page == $pages) ? 'disabled' : '' ?>"><a class="page-link" href="<?= $url ?>?page=<?= $pages ?>"> >> </a></li>
+            <li class="page-item "><a class="page-link" href="<?= $url ?>?page=<?= $page+1 ?>"> > </a></li>
+            <li class="page-item "><a class="page-link" href="<?= $url ?>?page=<?= $pages ?>"> >> </a></li>
             <?php endif; ?>
         <?php endif; ?>
     </ul>

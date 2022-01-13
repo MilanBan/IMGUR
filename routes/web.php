@@ -3,7 +3,7 @@
 $router = new \Bramus\Router\Router();
 
 $router->get( '/', function () {echo 'Hi from router.';} );
-$router->get( '/user', '\app\controllers\UserController@user' );
+$router->get( '/imgur/profiles/{$username}', '\app\controllers\UserController@show' );
 // Auth
 $router->get('/login', '\app\controllers\AuthController@login');
 $router->post('/login', '\app\controllers\AuthController@login');
@@ -14,12 +14,17 @@ $router->get('/logout', '\app\controllers\AuthController@logout');
 $router->get('/imgur', '\app\controllers\SiteController@images');
 $router->get('/imgur/galleries', '\app\controllers\SiteController@galleries');
 $router->get('/imgur/profiles', '\app\controllers\SiteController@profiles');
+
 // Image
+$router->get('/imgur/galleries/images/{$slug}/edit', '\app\controllers\ImageController@edit');
+$router->post('/imgur/galleries/images/{$slug}/update', '\app\controllers\ImageController@update');
+$router->get('/imgur/galleries/images/{$slug}', '\app\controllers\ImageController@show');
 
 
 // Gallery
 $router->get('/imgur/galleries/{$slug}/edit', '\app\controllers\GalleryController@edit');
 $router->post('/imgur/galleries/{$slug}/update', '\app\controllers\GalleryController@update');
 $router->get('/imgur/galleries/{$slug}', '\app\controllers\GalleryController@show');
+$router->delete('/imgur/test/{$id}', '\app\controllers\GalleryController@delete');
 
 $router->run();

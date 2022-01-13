@@ -13,6 +13,8 @@
     },
     "require": {
         "bramus/router": "~1.6",
-        "ext-pdo": "*"
+        "ext-pdo": "*",
+        "ext-json": "*",
+        "ext-iconv": "*"
     }
 }
