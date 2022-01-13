@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\Helper;
 use app\models\Session;
 use app\models\UserModel;
 
@@ -25,8 +26,9 @@ class AuthController extends Controller
             }else{
                 $user = $userM->getUser(['email', $userM->email]);
                 Session::set('user', $user);
+                Session::set('username', Helper::encode($user->username));
                 Session::setFlash('welcome', '<small>Welcome back</small> '.$user->username);
-                $this->redirect('imgur');
+                $this->redirect('imgur/profiles/'.Session::get('username'));
             }
         }
     }
@@ -49,8 +51,9 @@ class AuthController extends Controller
                 $userID = $userM->insert();
                 $user = $userM->getUser(['id', $userID]);
                 Session::set('user', $user);
+                Session::set('username', Helper::encode($user->username));
                 Session::setFlash('welcome', '<small>Welcome</small> '.$user->username);
-                $this->redirect('imgur');
+                $this->redirect('imgur/profiles/'.Session::get('username'));
             }
         }
     }

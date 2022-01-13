@@ -21,8 +21,6 @@ class ImageController extends Controller
 
     public function show($slug)
     {
-        var_dump('image show ctrl');
-
         $image = $this->imageM->getImage($slug);
         $user = $this->userM->getUser(['id', $image->user_id]);
         $gallery = $this->galleryM->getGalleryByImage($image->id);

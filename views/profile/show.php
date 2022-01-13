@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Helper;
 use app\models\Session;
 
 ?>
@@ -7,9 +8,13 @@ use app\models\Session;
 <div class="d-flex flex-wrap justify-content-center">
     <div class="border-bottom rounded-pill">
         <h1 class="text-center mt-5">Profile: <strong><?= ucwords($data['user']->username); ?></strong></h1>
-       <?php if (Session::get('user')->role !== 'user') : ?>
+       <?php if (Session::get('user')->role !== 'user' || Session::get('user')-> $data['user']->id) : ?>
         <p class="text-center m-3">(<?= $data['user']->role; ?>)</p>
         <p class="text-center m-3"><?= $data['user']->email; ?></p>
+        <div class="btn-group d-flex justify-content-around m-5">
+            <a class="btn btn-sm btn-warning" href="./<?= Helper::encode($data['user']->username) . '/edit' ?>">Edit</a>
+            <a class="btn btn-sm btn-danger" href="#">Delete</a>
+        </div>
         <?php endif; ?>
     </div>
 </div>

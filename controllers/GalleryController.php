@@ -21,7 +21,6 @@ class GalleryController extends Controller
 
     public function show($slug)
     {
-        var_dump('gallery show ctrl');
         $gallery = $this->galleryM->getGallery(['slug', $slug]);
         $user = $this->userM->getUser(['id', $gallery->user_id]);
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -45,8 +44,6 @@ class GalleryController extends Controller
 
     public function edit($slug)
     {
-        var_dump('gallery edit ctrl');
-
         $gallery = $this->galleryM->getGallery(['slug', $slug]);
 
         $this->renderView('gallery/edit', ['gallery' => $gallery]);
