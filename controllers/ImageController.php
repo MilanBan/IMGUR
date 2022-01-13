@@ -29,4 +29,25 @@ class ImageController extends Controller
 
         $this->renderView('image/show', ['image' => $image, 'user' => $user, 'gallery' => $gallery]);
     }
+
+    public function edit($slug)
+    {
+        $image = $this->imageM->getImage($slug);
+
+        $this->renderView('image/edit', ['image' => $image]);
+    }
+
+    public function update($slug)
+    {
+        $image = $this->imageM->getImage($slug);
+
+        $this->imageM->file_name = trim($_POST['file_name']) ?? $image->file_name;
+        $this->imageM->slug = trim($_POST['slug']) ?? $image->slug;
+        $this->imageM->hidden = $_POST['hidden'] ? '1' : '0';
+        $this->imageM->nsfw = $_POST['nsfw'] ? '1' : '0';
+
+        $this->imageM->update($image->id);
+
+        $this->redirect('/imgur/galleries/images/'.$this->imageM->slug);
+    }
 }

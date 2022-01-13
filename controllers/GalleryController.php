@@ -22,7 +22,7 @@ class GalleryController extends Controller
     public function show($slug)
     {
         var_dump('gallery show ctrl');
-        $gallery = $this->galleryM->find($slug);
+        $gallery = $this->galleryM->getGallery(['slug', $slug]);
         $user = $this->userM->getUser(['id', $gallery->user_id]);
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $prePage = isset($_GET['pre-page']) && $_GET['pre-page'] <= 50 ? (int)$_GET['pre-page'] : 20;
@@ -47,14 +47,14 @@ class GalleryController extends Controller
     {
         var_dump('gallery edit ctrl');
 
-        $gallery = $this->galleryM->find($slug);
+        $gallery = $this->galleryM->getGallery(['slug', $slug]);
 
         $this->renderView('gallery/edit', ['gallery' => $gallery]);
     }
 
     public function update($slug)
     {
-        $gallery = $this->galleryM->find($slug);
+        $gallery = $this->galleryM->getGallery(['slug', $slug]);
 
         $this->galleryM->name = !empty(trim($_POST['name'])) ? trim($_POST['name']) : $gallery->name;
         $this->galleryM->description = !empty(trim($_POST['description'])) ? trim($_POST['description']) : $gallery->description;
@@ -65,4 +65,5 @@ class GalleryController extends Controller
 
         $this->redirect('/imgur/galleries');
     }
+
 }

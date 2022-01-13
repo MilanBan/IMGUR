@@ -60,6 +60,26 @@ class ImageModel extends Model
         return $this->pdo->query($sql)->fetch();
     }
 
+    public function update($id)
+    {
+        $data = [
+            'file_name' => $this->file_name,
+            'slug' => $this->slug,
+            'hidden' => $this->hidden,
+            'nsfw' => $this->nsfw,
+            'id' => $id
+        ];
+
+        $sql = "UPDATE image SET file_name=:file_name, slug=:slug, hidden=:hidden, nsfw=:nsfw WHERE id=:id";
+
+        try {
+            $this->pdo->prepare($sql)->execute($data);
+            return true;
+        }catch (\PDOException $e){
+            return false;
+        }
+    }
+
 }
 
 // za total slika u gallery show-u

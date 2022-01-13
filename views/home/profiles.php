@@ -2,12 +2,10 @@
 use app\models\Session;
 ?>
 
-<h1>PROFILE PAGE</h1>
-
 <div class="d-flex flex-wrap justify-content-center">
     <?php if (isset($data['users'])) : ?>
         <?php foreach ($data['users'] as $user) : ?>
-            <a href="#">
+            <a href="/imgur/profiles/<?=\app\models\Helper::encode($user->username) ?>">
             <div class="card text-center m-5 border border-white" style="width: 12rem;">
                 <img class="card-img-top rounded-circle" src="https://eu.ui-avatars.com/api/?name=<?= $user->username ?>?size=128" alt="Card image cap">
                 <div class="card-body">
