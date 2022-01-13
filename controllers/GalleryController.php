@@ -27,7 +27,6 @@ class GalleryController extends Controller
         $prePage = isset($_GET['pre-page']) && $_GET['pre-page'] <= 50 ? (int)$_GET['pre-page'] : 20;
         $start = ($page > 1) ? ($page * $prePage) - $prePage : 0;
         $total = $this->imageM->getTotal($gallery->id)->total;
-
         $pages = ceil($total / $prePage);
 
         $pagination =[
@@ -40,6 +39,28 @@ class GalleryController extends Controller
         ];
 
         $images = $this->imageM->getAllByGallery($gallery->id, $start, $prePage);
-        $this->renderView('gallery/show', ['gallery' => $gallery, 'images' => $images, 'user' => $user]);
+        $this->renderView('gallery/show', ['gallery' => $gallery, 'images' => $images, 'user' => $user, 'pagination' => $pagination]);
+    }
+
+    public function edit($slug)
+    {
+
+        $gallery = $this->galleryM->find($slug);
+
+        $this->renderView('gallery/edit', ['gallery' => $gallery]);
+    }
+
+    public function update($slug)
+    {
+        $gallery = $this->galleryM->find($slug);
+
+        $this->galleryM->name = !empty(trim($_POST['name'])) ? trim($_POST['name']) : $gallery->name;
+        $this->galleryM->description = !empty(trim($_POST['description'])) ? trim($_POST['description']) : $gallery->description;
+        $this->galleryM->hidden = (isset($_POST['hidden']) ? '1' : '0');
+        $this->galleryM->nsfw = (isset($_POST['nsfw']) ? '1' : '0');
+
+        $this->galleryM->update($gallery->id);
+
+        $this->redirect('/imgur/galleries');
     }
 }

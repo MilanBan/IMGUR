@@ -65,9 +65,9 @@ class UserModel extends Model
 
     public function getTotal()
     {
-        if (in_array(Session::get('user')->role, ['admin', 'moderator'])) {
+        if (in_array(Session::get('user')->role, ['admin', 'moderator'])) {             // Site - profiles
             $sql = "SELECT count(*) as 'total' FROM user";
-        }else{
+        }else{                                                                          // Site - profiles
             $sql = "SELECT count(*) as 'total' FROM user WHERE `active` = 1 AND `nsfw` = 0";
         }
 

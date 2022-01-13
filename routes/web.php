@@ -18,6 +18,8 @@ $router->get('/imgur/profiles', '\app\controllers\SiteController@profiles');
 
 
 // Gallery
+$router->get('/imgur/galleries/{$slug}/edit', '\app\controllers\GalleryController@edit');
+$router->post('/imgur/galleries/{$slug}/update', '\app\controllers\GalleryController@update');
 $router->get('/imgur/galleries/{$slug}', '\app\controllers\GalleryController@show');
 
 $router->run();

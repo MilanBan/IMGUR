@@ -16,7 +16,7 @@ use app\models\Session;
                 <?php if (Session::get('user')->id == $data['gallery']->user_id) : ?>
                     <a class="btn btn-sm btn-success" href="imgur/galleries/<?= $data['gallery']->id ?>/images/add">Add Image</a>
                 <?php endif; ?>
-                <a class="btn btn-sm btn-warning" href="<?= $data['gallery']->slug ?>/edit">Edit</a>
+                <a class="btn btn-sm btn-warning" href="./<?= $data['gallery']->slug ?>/edit">Edit</a>
                 <?php if (Session::get('user')->id == $data['gallery']->user_id || Session::get('user')->role != 'moderator') : ?>
                     <a class="btn btn-sm btn-danger" type="button" id="delete-gallery" data-id="<?= $data['gallery']->id ?>">Delete</a>
                 <?php endif; ?>

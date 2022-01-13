@@ -36,16 +36,13 @@ class ImageModel extends Model
 // helper
     public function getTotal($gallery_id = null)
     {
-        if ($gallery_id){
-            $user_id = $this->pdo->query("SELECT `user_id` FROM `gallery` WHERE `id` = $gallery_id")->fetchColumn();
-        }
-        if (in_array(Session::get('user')->role, ['admin', 'moderator'])) {
+        if (in_array(Session::get('user')->role, ['admin', 'moderator'])) {             // Site - index
             $sql = "SELECT count(*) as 'total' FROM image";
-        }elseif (Session::get('user')->id == $user_id){
-            $sql = sprintf("SELECT count(*) as 'total' FROM image WHERE `user_id` = %s `hidden` = 0 AND `nsfw` = 0",
-                Session::get('user')->id
-                );
-        }else{
+        }if ($gallery_id){                                                              // Gallery - show
+        $sql= sprintf("SELECT count(*) as 'total' FROM `image_gallery` WHERE gallery_id = %s",
+               $gallery_id
+               );
+        }else{                                                                           // Site - index
             $sql = "SELECT count(*) as 'total' FROM image WHERE `hidden` = 0 AND `nsfw` = 0";
         }
 
@@ -53,3 +50,12 @@ class ImageModel extends Model
     }
 
 }
+
+// za total slika u gallery show-u
+//                $sql= sprintf("select count (*) as 'total' from `image_gallery` ig
+//            inner join `image` i on ig.`image_id` = i.`id`
+//            inner join `gallery` g on ig.`gallery_id` = g.`id`
+//            where g.id =:id",
+//               $gallery_id
+//               );
+// kraj
