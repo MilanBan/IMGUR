@@ -79,4 +79,11 @@ class GalleryModel extends Model
             return false;
         }
     }
+
+    public function getGalleryByImage($id)
+    {
+        $sql = "SELECT g.`name`, g.`slug` FROM `gallery` g INNER JOIN `image_gallery` ig ON g.`id` = ig.`gallery_id` WHERE ig.`image_id` = $id";
+
+        return $this->pdo->query($sql)->fetch();
+    }
 }

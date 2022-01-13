@@ -14,7 +14,7 @@ use app\models\Session;
                 <div class="card-body">
                     <h5 class="card-title"><?= $gallery->name ?></h5>
                     <?php if (in_array(Session::get('user')->role, ['admin', 'moderator'])) : ?>
-                    <p class="text-muted"><small><?= $gallery->hidden ? '( hidden )' : '' ?><?= $gallery->nsfw ? '( nsfw )' : '' ?></small></p>
+                        <p class="text-muted"><small><?= $gallery->hidden ? '( hidden )' : '' ?><?= $gallery->nsfw ? '( nsfw )' : '' ?></small></p>
                     <?php endif; ?>
                 </div>
             </div>

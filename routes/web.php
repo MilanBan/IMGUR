@@ -14,7 +14,9 @@ $router->get('/logout', '\app\controllers\AuthController@logout');
 $router->get('/imgur', '\app\controllers\SiteController@images');
 $router->get('/imgur/galleries', '\app\controllers\SiteController@galleries');
 $router->get('/imgur/profiles', '\app\controllers\SiteController@profiles');
+
 // Image
+$router->get('/imgur/galleries/images/{$slug}', '\app\controllers\ImageController@show');
 
 
 // Gallery
