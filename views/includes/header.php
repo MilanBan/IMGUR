@@ -42,7 +42,7 @@ use app\models\Session;
                         <?php endif; ?>
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" href="#">Profile </a>
+                        <a class="dropdown-item" href="/imgur/profiles/<?= Session::get('username') ?>">Profile </a>
                         <a class="dropdown-item" href="/logout">Logout</a>
                     </div>
                 </div>
