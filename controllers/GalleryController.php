@@ -56,10 +56,10 @@ class GalleryController extends Controller
     {
         $gallery = $this->galleryM->getGallery(['slug', $slug]);
 
-        $this->galleryM->name = !empty(trim($_POST['name'])) ? trim($_POST['name']) : $gallery->name;
-        $this->galleryM->description = !empty(trim($_POST['description'])) ? trim($_POST['description']) : $gallery->description;
-        $this->galleryM->hidden = (isset($_POST['hidden']) ? '1' : '0');
-        $this->galleryM->nsfw = (isset($_POST['nsfw']) ? '1' : '0');
+        $this->galleryM->name = trim($_POST['name']) ??  $gallery->name;
+        $this->galleryM->description = trim($_POST['description']) ?? $gallery->description;
+        $this->galleryM->hidden = $_POST['hidden'] ? '1' : '0';
+        $this->galleryM->nsfw = $_POST['nsfw'] ? '1' : '0';
 
         $this->galleryM->update($gallery->id);
 

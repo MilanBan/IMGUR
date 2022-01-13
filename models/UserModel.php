@@ -151,6 +151,25 @@ class UserModel extends Model
         }
     }
 
+    public function update($id)
+    {
+        $data = [
+            'username' => $this->username,
+            'email' => $this->email,
+            'active' => $this->active,
+            'nsfw' => $this->nsfw,
+            'id' => $id
+        ];
+
+        $sql = "UPDATE user SET username=:username, email=:email, active=:active, nsfw=:nsfw WHERE id=:id";
+
+        try {
+            $this->pdo->prepare($sql)->execute($data);
+            return true;
+        }catch (\PDOException $e){
+            return false;
+        }
+    }
 
 
 }

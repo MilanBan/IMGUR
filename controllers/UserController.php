@@ -56,4 +56,25 @@ class UserController extends Controller
 
         $this->renderView('profile/show', array('user' => $user, 'galleries' => $galleries, 'cover' => $cover, 'pagination' => $pagination));
     }
+
+    public function edit($username)
+    {
+        $user = $this->userM->getUser(['username', Helper::decode($username)]);
+
+        $this->renderView('profile/edit', ['user' => $user]);
+    }
+
+    public function update($username)
+    {
+        $user = $this->userM->getUser(['username', Helper::decode($username)]);
+
+        $this->userM->username = trim($_POST['username']) ?? $user->username;
+        $this->userM->email = trim($_POST['email']) ?? $user->email;
+        $this->userM->active = $_POST['active'] ? '1' : '0';
+        $this->userM->nsfw = $_POST['nsfw'] ? '1' : '0';
+
+        $this->userM->update($user->id);
+
+        $this->redirect('imgur/profiles/'.Helper::encode($user->username));
+    }
 }
