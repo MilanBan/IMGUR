@@ -24,7 +24,7 @@ use app\models\Session;
         </div>
         <div class="mb-3 form-check">
             <input class="form-check-input" type="checkbox"
-                   name="nsfw" <?= $data['image']->nsfw ? 'checked' : '' ?> >
+                   name="nsfw" <?= $data['user']->nsfw ? 'checked' : '' ?> >
             <label class="form-check-label" for="nsfw">NSFW</label>
         </div>
     </div>

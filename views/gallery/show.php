@@ -14,7 +14,7 @@ use app\models\Session;
         <?php if (Session::get('user')->id == $data['gallery']->user_id || in_array(Session::get('user')->role, ['moderator', 'admin'])) : ?>
             <div class="btn-group d-flex justify-content-around m-5">
                 <?php if (Session::get('user')->id == $data['gallery']->user_id) : ?>
-                    <a class="btn btn-sm btn-success" href="imgur/galleries/<?= $data['gallery']->id ?>/images/add">Add Image</a>
+                    <a class="btn btn-sm btn-success" href="./<?= $data['gallery']->slug ?>/images/add">Add Image</a>
                 <?php endif; ?>
                 <a class="btn btn-sm btn-warning" href="./<?= $data['gallery']->slug ?>/edit">Edit</a>
                 <?php if (Session::get('user')->id == $data['gallery']->user_id || Session::get('user')->role != 'moderator') : ?>

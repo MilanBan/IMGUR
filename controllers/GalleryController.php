@@ -3,7 +3,9 @@
 namespace app\controllers;
 
 use app\models\GalleryModel;
+use app\models\Helper;
 use app\models\ImageModel;
+use app\models\Session;
 use app\models\UserModel;
 
 class GalleryController extends Controller
@@ -62,5 +64,30 @@ class GalleryController extends Controller
 
         $this->redirect('/imgur/galleries');
     }
+
+    public function create()
+    {
+        if (Session::get('user')){
+            return $this->renderView('gallery/create');
+        }else{
+            return $this->redirect('');
+        }
+    }
+
+    public function store()
+    {
+        if (isset($_POST['name']) && isset($_POST['description'])) {
+            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+
+            $this->galleryM->name = trim($_POST["name"]);
+            $this->galleryM->description = trim($_POST["description"]);
+            $this->galleryM->user_id = Session::get('user')->id;
+            $this->galleryM->slug = Helper::slugify(trim($_POST["name"]).'-'.time());
+
+            $this->galleryM->insert();
+            $this->redirect('imgur/profiles/'.Session::get('username'));
+        }
+    }
+
 
 }

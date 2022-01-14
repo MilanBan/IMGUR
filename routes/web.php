@@ -25,6 +25,8 @@ $router->post('/imgur/galleries/images/{$slug}/update', '\app\controllers\ImageC
 $router->get('/imgur/galleries/images/{$slug}', '\app\controllers\ImageController@show');
 
 // Gallery
+$router->get('/imgur/galleries/create', '\app\controllers\GalleryController@create');
+$router->post('/imgur/galleries/create', '\app\controllers\GalleryController@store');
 $router->get('/imgur/galleries/{$slug}/edit', '\app\controllers\GalleryController@edit');
 $router->post('/imgur/galleries/{$slug}/update', '\app\controllers\GalleryController@update');
 $router->get('/imgur/galleries/{$slug}', '\app\controllers\GalleryController@show');

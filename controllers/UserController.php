@@ -68,13 +68,21 @@ class UserController extends Controller
     {
         $user = $this->userM->getUser(['username', Helper::decode($username)]);
 
-        $this->userM->username = trim($_POST['username']) ?? $user->username;
-        $this->userM->email = trim($_POST['email']) ?? $user->email;
+
+        $this->userM->username = empty(trim($_POST['username'])) ? $user->username : trim($_POST['username']);
+        $this->userM->email = empty(trim($_POST['email'])) ? $user->email : trim($_POST['email']);
+        $this->userM->role = isset($_POST['role']) ? $_POST['role'] : $user->role;
         $this->userM->active = $_POST['active'] ? '1' : '0';
         $this->userM->nsfw = $_POST['nsfw'] ? '1' : '0';
 
+        if (Session::get('user')->id == $user->id)
+        {
+            $user->role = $_POST['role'] ?? $user->role;
+            Session::set('user', $user);
+        }
+
         $this->userM->update($user->id);
 
-        $this->redirect('imgur/profiles/'.Helper::encode($user->username));
+        $this->redirect('imgur/profiles/'.Helper::encode($this->userM->username));
     }
 }
