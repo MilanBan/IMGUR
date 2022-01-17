@@ -1,0 +1,57 @@
+//user password updated to 'password'
+UPDATE user SET password = '$2y$10$FsGdvCRVIR/GGYu20Oe/xuYQkMH2ZdJAaPwWRTRYxpq8p.LCuUw1e'
+
+//drop fk image_gallery - image
+alter table image_gallery drop foreign key FK_D23B2FE63DA5256D
+
+//add fk image_gallery - image
+alter table image_gallery dorp FK_D23B2FE63DA5256D foreign key (image_id) references image (id) on delete cascade
+
+//drop fk image_gallery - gallery
+alter table image_gallery drop foreign key FK_D23B2FE64E7AF8F
+
+//add fk image_gallery - gallery
+alter table image_gallery add constraint FK_D23B2FE64E7AF8F foreign key (gallery_id) references image(id) on delete cascade
+
+//drop fk comment - gallery
+alter table comment drop foreign key FK_9474526C4E7AF8F
+
+//add fk comment - gallery
+alter table comment add constraint FK_9474526C4E7AF8F foreign key (gallery_id) references gallery(id) on delete cascade
+
+//drop fk comment - image
+alter table comment drop foreign key FK_9474526C3DA5256D
+
+//add fk comment - image
+alter table comment add constraint FK_9474526C3DA5256D foreign key (image_id) references image(id) on delete cascade
+
+//drop fk comment - user
+alter table comment drop foreign key FK_9474526CA76ED395
+
+//add fk comment - user
+alter table comment add constraint FK_9474526CA76ED395 foreign key (user_id) references user(id) on delete cascade
+
+//drop fk image - user
+alter table image drop foreign key FK_C53D045FA76ED395
+
+//add fk image - user
+alter table image add constraint FK_C53D045FA76ED395 foreign key (user_id) references user(id) on delete cascade
+
+//drop fk gallery - user
+alter table gallery drop  foreign key FK_472B783AA76ED395
+
+//add fk gallery - user
+alter table gallery add constraint FK_472B783AA76ED395 foreign key (user_id) references user(id) on DELETE cascade 
+
+//create moderator_logging table
+create table if not exists `moderator_logging` (`id` int primary key auto_increment,`message` varchar(255) not null,`created_at` timestamp null default null)
+
+//add active column in user
+alter table `user` add column `active` int default 1
+
+//add nsfw column in user
+alter table `user` add column `nsfw` int default 0
+
+//update image links
+UPDATE image SET file_name = concat('https://picsum.photos/200/300?random=', id)
+
