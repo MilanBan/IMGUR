@@ -11,7 +11,10 @@ use app\models\Session;
        <?php if (Session::get('user')->role !== 'user' || Session::get('user')-> $data['user']->id) : ?>
         <p class="text-center m-3">(<?= $data['user']->role; ?>)</p>
         <p class="text-center m-3"><?= $data['user']->email; ?></p>
-        <div class="btn-group d-flex justify-content-around m-5">
+           <div class="d-flex justify-content-center">
+                <a class="btn btn-sm btn-primary" href="../galleries/create">Create Gallery</a>
+           </div>
+        <div class="btn-group d-flex justify-content-around m-4">
             <a class="btn btn-sm btn-warning" href="./<?= Helper::encode($data['user']->username) . '/edit' ?>">Edit</a>
             <a class="btn btn-sm btn-danger" href="#">Delete</a>
         </div>
@@ -24,7 +27,7 @@ use app\models\Session;
         <?php foreach ($data['galleries'] as $gallery) : ?>
             <div class="card m-1 border border-primary" style="width: 12rem;">
                 <a href="/imgur/galleries/<?= $gallery->slug ?>">
-                    <img class="card-img-top" src="<?= $data['cover'][$gallery->id] ?>" alt="Card image cap">
+                    <img class="card-img-top" src="<?= $data['cover'][$gallery->id] ?>"
                 </a>
                 <div class="card-body">
                     <h6 class="card-title"><?= ucwords($gallery->name) ?></h6>

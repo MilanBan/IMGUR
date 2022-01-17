@@ -34,7 +34,7 @@ use app\models\Session;
             <?php if (Session::get('user')): ?>
                 <div class="dropdown">
                     <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <?= Session::get('user')->username ?>
+                        <?= ucwords(Session::get('user')->username) ?>
                         <?php if(Session::get('user')->role == 'admin') : ?>
                             <small>(A)</small>
                         <?php elseif (Session::get('user')->role == 'moderator') : ?>

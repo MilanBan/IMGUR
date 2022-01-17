@@ -79,8 +79,18 @@ class UserModel extends Model
         $this->errors = [];
         $this->mode = $mode;
 
-        $this->validateEmail();
-        $this->validatePassword();
+        if ($mode === 'update'){
+            if (!empty(trim($_POST['username']))){
+                $this->validateUsername();
+            }
+            if (!empty(trim($_POST['email']))){
+                $this->validateEmail();
+            }
+        }
+        if (in_array($mode, ['register' , 'login'])){
+            $this->validateEmail();
+            $this->validatePassword();
+        }
 
         if ($mode === 'register') {
             $this->validateUsername();
@@ -158,10 +168,11 @@ class UserModel extends Model
             'email' => $this->email,
             'active' => $this->active,
             'nsfw' => $this->nsfw,
+            'role' => $this->role,
             'id' => $id
         ];
 
-        $sql = "UPDATE user SET username=:username, email=:email, active=:active, nsfw=:nsfw WHERE id=:id";
+        $sql = "UPDATE user SET username = :username, email = :email, active = :active, nsfw = :nsfw, role = :role WHERE id=:id";
 
         try {
             $this->pdo->prepare($sql)->execute($data);

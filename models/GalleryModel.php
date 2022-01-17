@@ -106,4 +106,23 @@ class GalleryModel extends Model
 
         return $this->pdo->query($sql)->fetchAll();
     }
+
+    public function insert()
+    {
+        $data = [
+            'user_id' => $this->user_id,
+            'name' => $this->name,
+            'description' => $this->description,
+            'slug' => $this->slug,
+        ];
+
+        $sql = "INSERT INTO gallery (user_id, name, description, slug) 
+                VALUES (:user_id, :name, :description, :slug)";
+
+        try {
+           $this->pdo->prepare($sql)->execute($data);
+        }catch (\PDOException $e){
+            return false;
+        }
+    }
 }

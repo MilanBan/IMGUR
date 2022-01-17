@@ -9,7 +9,7 @@ use app\models\Session;
         <?php foreach ($data['galleries'] as $gallery) : ?>
             <div class="card m-1 border border-primary" style="width: 16rem;">
             <a href="/imgur/galleries/<?= $gallery->slug ?>">
-                <img class="card-img-top" src="<?= $data['cover'][$gallery->id] ?>" alt="Card image cap">
+                <img class="card-img-top" src="<?= $data['cover'][$gallery->id] ?>" alt="Empty gallery">
             </a>
                 <div class="card-body">
                     <h5 class="card-title"><?= $gallery->name ?></h5>
