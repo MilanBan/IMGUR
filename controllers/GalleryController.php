@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\models\GalleryModel;
 use app\models\Helper;
 use app\models\ImageModel;
+use app\models\ModeratorLogModel;
 use app\models\Session;
 use app\models\UserModel;
 
@@ -13,12 +14,15 @@ class GalleryController extends Controller
     private GalleryModel $galleryM;
     private ImageModel $imageM;
     private UserModel $userM;
+    private ModeratorLogModel $moderatorLogM;
 
     public function __construct()
     {
         $this->galleryM = new GalleryModel();
         $this->imageM = new ImageModel();
         $this->userM = new UserModel();
+        $this->moderatorLogM = new ModeratorLogModel();
+
     }
 
     public function show($slug)
@@ -55,14 +59,27 @@ class GalleryController extends Controller
     {
         $gallery = $this->galleryM->getGallery(['slug', $slug]);
 
-        $this->galleryM->name = trim($_POST['name']) ??  $gallery->name;
-        $this->galleryM->description = trim($_POST['description']) ?? $gallery->description;
+        $this->galleryM->name = empty(trim($_POST['name'])) ? $gallery->name : trim($_POST['name']);
+        $this->galleryM->description = empty(trim($_POST['description'])) ? $gallery->description : trim($_POST['description']);
         $this->galleryM->hidden = $_POST['hidden'] ? '1' : '0';
         $this->galleryM->nsfw = $_POST['nsfw'] ? '1' : '0';
 
         $this->galleryM->update($gallery->id);
 
-        $this->redirect('/imgur/galleries');
+        if (Session::get('user')->id !== $gallery->user_id && Session::get('user')->role == 'moderator')
+        {
+
+            if ($gallery->hidden !== $this->galleryM->hidden) {
+                $hidden = "hidden as ".$this->galleryM->hidden;
+            }
+            if ($gallery->nsfw !== $this->galleryM->nsfw){
+                $nsfw = "nsfw as ".$this->galleryM->nsfw;
+            }
+            $this->moderatorLogM->msg = "Moderator ". Session::get('user')->username ." set gallery ". $gallery->name ." ".$hidden." ".$nsfw ;
+            $this->moderatorLogM->logging();
+        }
+
+        $this->redirect('imgur/galleries');
     }
 
     public function create()

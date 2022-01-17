@@ -26,7 +26,7 @@ use app\models\Session;
                     <a class="nav-link" href="/imgur/galleries">Galleries </a>
                 </li>
                 <li class="nav-item <?= ($_SERVER['REQUEST_URI'] == '/imgur/profiles') ? 'active' : '' ?>">
-                    <a class="nav-link" href="/imgur/profiles">Profiles </a>
+                    <a class="nav-link" href="/imgur/profiles">Profiles <small><?= in_array(Session::get('user')->role, ['admin', 'moderator']) ? '(Administration)' : '' ?></small></a>
                 </li>
             <?php endif; ?>
         </ul>

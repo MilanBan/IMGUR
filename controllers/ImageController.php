@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\models\GalleryModel;
 use app\models\Helper;
 use app\models\ImageModel;
+use app\models\ModeratorLogModel;
 use app\models\Session;
 use app\models\UserModel;
 
@@ -13,12 +14,15 @@ class ImageController extends Controller
     private ImageModel $imageM;
     private UserModel $userM;
     private GalleryModel $galleryM;
+    private ModeratorLogModel $moderatorLogM;
 
     public function __construct()
     {
         $this->imageM = new ImageModel();
         $this->userM = new UserModel();
         $this->galleryM = new GalleryModel();
+        $this->moderatorLogM = new ModeratorLogModel();
+
     }
 
     public function show($slug)
@@ -41,14 +45,26 @@ class ImageController extends Controller
     {
         $image = $this->imageM->getImage($slug);
 
-        $this->imageM->file_name = trim($_POST['file_name']) ?? $image->file_name;
-        $this->imageM->slug = trim($_POST['slug']) ?? $image->slug;
+        $this->imageM->file_name = empty(trim($_POST['file_name'])) ? $image->file_name : trim($_POST['file_name']);
+        $this->imageM->slug = empty(trim($_POST['slug'])) ? $image->slug : trim($_POST['slug']);
         $this->imageM->hidden = $_POST['hidden'] ? '1' : '0';
         $this->imageM->nsfw = $_POST['nsfw'] ? '1' : '0';
 
         $this->imageM->update($image->id);
 
-        $this->redirect('/imgur/galleries/images/'.$this->imageM->slug);
+        if (Session::get('user')->id !== $image->user_id && Session::get('user')->role == 'moderator')
+        {
+            if ($image->hidden !== $this->imageM->hidden) {
+                $hidden = "hidden as ".$this->imageM->hidden;
+            }
+            if ($image->nsfw !== $this->imageM->nsfw){
+                $nsfw = "nsfw as ".$this->imageM->nsfw;
+            }
+            $this->moderatorLogM->msg = "Moderator ". Session::get('user')->username ." set image ". $image->file_name ." ".$hidden." ".$nsfw ;
+            $this->moderatorLogM->logging();
+        }
+
+        $this->redirect('imgur/galleries/images/'.$this->imageM->slug);
     }
 
     public function create($slug)

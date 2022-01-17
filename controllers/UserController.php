@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\models\GalleryModel;
 use app\models\Helper;
+use app\models\ModeratorLogModel;
 use app\models\Session;
 use app\models\UserModel;
 
@@ -12,11 +13,13 @@ class UserController extends Controller
 
     private UserModel $userM;
     private GalleryModel $galleryM;
+    private ModeratorLogModel $moderatorLogM;
 
     public function __construct()
     {
         $this->userM = new UserModel();
         $this->galleryM = new GalleryModel();
+        $this->moderatorLogM = new ModeratorLogModel();
     }
 
     public function profile()
@@ -68,7 +71,6 @@ class UserController extends Controller
     {
         $user = $this->userM->getUser(['username', Helper::decode($username)]);
 
-
         $this->userM->username = empty(trim($_POST['username'])) ? $user->username : trim($_POST['username']);
         $this->userM->email = empty(trim($_POST['email'])) ? $user->email : trim($_POST['email']);
         $this->userM->role = isset($_POST['role']) ? $_POST['role'] : $user->role;
@@ -87,10 +89,23 @@ class UserController extends Controller
         if (Session::get('user')->id == $user->id)
         {
             $user->role = $_POST['role'] ?? $user->role;
-            $user->username = $_POST['username'] ?? $user->username;
+            $user->username = empty(trim($_POST['username'])) ? $user->username : trim($_POST['username']);
             Session::set('user', $user);
+            Session::set('username', Helper::encode($user->username));
         }
 
-        $this->redirect('imgur/profiles/');
+        if (Session::get('user')->id !== $user->id && Session::get('user')->role == 'moderator')
+        {
+            if ($user->active !== $this->userM->active) {
+                $active = "active as ".$this->userM->active;
+            }
+            if ($user->nsfw !== $this->userM->nsfw){
+                $nsfw = "nsfw as ".$this->userM->nsfw;
+            }
+            $this->moderatorLogM->msg = "Moderator ". Session::get('user')->username ." set user ". $user->username ." ".$active." ".$nsfw ;
+            $this->moderatorLogM->logging();
+        }
+
+        $this->redirect('imgur/profiles/'.Session::get('username'));
     }
 }

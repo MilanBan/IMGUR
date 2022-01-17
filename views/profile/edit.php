@@ -4,7 +4,7 @@ use app\models\Helper;
 use app\models\Session;
 ?>
 
-<form method="post" action="../<?= Helper::encode($data['user']->username) ?>/update">
+<form method="post" action="../<?= empty(trim($_POST['username'])) ? Helper::encode($data['user']->username) : Session::get('update') ?>/update">
     <?php if (Session::get('user')->id == $data['user']->id) : ?>
         <div class="form-group mb-3">
             <label for="username" class="form-label">Username</label>
