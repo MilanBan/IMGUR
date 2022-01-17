@@ -6,12 +6,12 @@ class ImageModel extends Model
 {
     public function getAll($start, $prePage)
     {
-        if (in_array(Session::get('user')->role, ['admin', 'moderator'])){
+        if (in_array(Session::get('user')->role, ['admin', 'moderator'])) {
             $sql = sprintf("SELECT `slug`, `file_name` FROM `image` LIMIT %s, %s",
                 $start,
                 $prePage
             );
-        }else{
+        } else {
             $sql = sprintf("SELECT `slug`, `file_name` FROM `image` WHERE `hidden` = 0 AND `nsfw` = 0 LIMIT %s, %s",
                 $start,
                 $prePage
@@ -21,7 +21,7 @@ class ImageModel extends Model
         return $this->pdo->query($sql)->fetchAll();
     }
 
-    public function getAllByGallery($gallery_id,$start,$prePage)
+    public function getAllByGallery($gallery_id, $start, $prePage)
     {
         $sql = sprintf("SELECT i.`slug`, i.`file_name` FROM `image` i INNER JOIN `image_gallery` ig ON i.`id` = ig.`image_id` WHERE ig.`gallery_id` = %s ORDER BY i.`id` DESC LIMIT %s, %s",
             $gallery_id,
@@ -38,11 +38,12 @@ class ImageModel extends Model
     {
         if (in_array(Session::get('user')->role, ['admin', 'moderator'])) {             // Site - index
             $sql = "SELECT count(*) as 'total' FROM image";
-        }if ($gallery_id){                                                              // Gallery - show
-        $sql= sprintf("SELECT count(*) as 'total' FROM `image_gallery` WHERE gallery_id = %s",
-               $gallery_id
-               );
-        }else{                                                                           // Site - index
+        }
+        if ($gallery_id) {                                                              // Gallery - show
+            $sql = sprintf("SELECT count(*) as 'total' FROM `image_gallery` WHERE gallery_id = %s",
+                $gallery_id
+            );
+        } else {                                                                           // Site - index
             $sql = "SELECT count(*) as 'total' FROM image WHERE `hidden` = 0 AND `nsfw` = 0";
         }
 
@@ -71,18 +72,42 @@ class ImageModel extends Model
         try {
             $this->pdo->prepare($sql)->execute($data);
             return true;
-        }catch (\PDOException $e){
+        } catch (\PDOException $e) {
             return false;
         }
     }
 
-}
+    public function insert()
+    {
+        $data1 = [
+            'user_id' => $this->user_id,
+            'file_name' => $this->file_name,
+            'slug' => $this->slug,
+        ];
 
-// za total slika u gallery show-u
-//                $sql= sprintf("select count (*) as 'total' from `image_gallery` ig
-//            inner join `image` i on ig.`image_id` = i.`id`
-//            inner join `gallery` g on ig.`gallery_id` = g.`id`
-//            where g.id =:id",
-//               $gallery_id
-//               );
-// kraj
+        $sql = "INSERT INTO image (user_id, file_name, slug) 
+                VALUES (:user_id, :file_name, :slug)";
+
+        try {
+            $this->pdo->prepare($sql)->execute($data1);
+        }catch (\PDOException $e){
+            return false;
+        }
+
+        $image_id = $this->pdo->lastInsertId();
+
+        $data2 = [
+            'image_id' => $image_id,
+            'gallery_id' => $this->gallery_id,
+        ];
+
+        $sql = "INSERT INTO image_gallery (image_id, gallery_id) 
+                VALUES (:image_id, :gallery_id)";
+
+        try {
+            $this->pdo->prepare($sql)->execute($data2);
+        }catch (\PDOException $e){
+            return false;
+        }
+    }
+}
