@@ -75,14 +75,22 @@ class UserController extends Controller
         $this->userM->active = $_POST['active'] ? '1' : '0';
         $this->userM->nsfw = $_POST['nsfw'] ? '1' : '0';
 
-        if (Session::get('user')->id == $user->id)
-        {
-            $user->role = $_POST['role'] ?? $user->role;
-            Session::set('user', $user);
+        $errors = $this->userM->validate('update');
+
+        if (count($errors)){
+            http_response_code(422);
+            $this->renderView('profile/edit', ['errors' => $errors]);
         }
 
         $this->userM->update($user->id);
 
-        $this->redirect('imgur/profiles/'.Helper::encode($this->userM->username));
+        if (Session::get('user')->id == $user->id)
+        {
+            $user->role = $_POST['role'] ?? $user->role;
+            $user->username = $_POST['username'] ?? $user->username;
+            Session::set('user', $user);
+        }
+
+        $this->redirect('imgur/profiles/');
     }
 }

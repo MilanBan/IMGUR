@@ -10,10 +10,24 @@ use app\models\Session;
             <label for="username" class="form-label">Username</label>
             <input type="text" class="form-control" name="username" value="<?= $data['user']->username ?>">
         </div>
+        <?php if (isset($data['errors']['username'])) : ?>
+            <div class="mb-3">
+                <small class="text-danger">
+                    <?= $data['errors']['username'] ?>
+                </small>
+            </div>
+        <?php endif; ?>
         <div class="form-group mb-3">
-            <label for="email" class="form-label">Slug</label>
+            <label for="email" class="form-label">Email</label>
             <input type="email" class="form-control" name="email" value="<?= $data['user']->email ?>">
         </div>
+        <?php if (isset($data['errors']['email'])) : ?>
+            <div class="mb-3">
+                <small class="text-danger">
+                    <?= $data['errors']['email'] ?>
+                </small>
+            </div>
+        <?php endif; ?>
     <?php endif; ?>
     <?php if (in_array(Session::get('user')->role, ['admin', 'moderator'])) : ?>
     <div class="form-check form-check-inline">
