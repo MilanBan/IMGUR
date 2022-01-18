@@ -35,4 +35,7 @@ $router->post('/imgur/galleries/{$slug}/update', '\app\controllers\GalleryContro
 $router->get('/imgur/galleries/{$slug}', '\app\controllers\GalleryController@show');
 $router->post('/imgur/galleries/{$id}', '\app\controllers\GalleryController@delete');
 
+// Comment
+$router->post('/imgur/comments', '\app\controllers\CommentController@store');
+
 $router->run();

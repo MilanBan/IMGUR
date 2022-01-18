@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\CommentModel;
 use app\models\GalleryModel;
 use app\models\Helper;
 use app\models\ImageModel;
@@ -15,6 +16,7 @@ class GalleryController extends Controller
     private ImageModel $imageM;
     private UserModel $userM;
     private ModeratorLogModel $moderatorLogM;
+    private CommentModel $commentM;
 
     public function __construct()
     {
@@ -22,13 +24,18 @@ class GalleryController extends Controller
         $this->imageM = new ImageModel();
         $this->userM = new UserModel();
         $this->moderatorLogM = new ModeratorLogModel();
+        $this->commentM = new CommentModel();
 
     }
 
     public function show($slug)
     {
         $gallery = $this->galleryM->getGallery(['slug', $slug]);
+
         $user = $this->userM->getUser(['id', $gallery->user_id]);
+
+        $comments = $this->commentM->getAll(['gallery_id',$gallery->id]);
+
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $prePage = isset($_GET['pre-page']) && $_GET['pre-page'] <= 50 ? (int)$_GET['pre-page'] : 20;
         $start = ($page > 1) ? ($page * $prePage) - $prePage : 0;
@@ -45,7 +52,8 @@ class GalleryController extends Controller
         ];
 
         $images = $this->imageM->getAllByGallery($gallery->id, $start, $prePage);
-        $this->renderView('gallery/show', ['gallery' => $gallery, 'images' => $images, 'user' => $user, 'pagination' => $pagination]);
+
+        $this->renderView('gallery/show', ['gallery' => $gallery, 'images' => $images, 'user' => $user, 'pagination' => $pagination, 'comments' => $comments]);
     }
 
     public function edit($slug)

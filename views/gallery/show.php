@@ -52,4 +52,9 @@ use app\models\Session;
 <div class="row justify-content-center">
     <?php require __DIR__ . '/../includes/pagination.php'; ?>
 </div>
+<div class="row justify-content-center">
+    <?php require __DIR__.'/../includes/comments.php'; ?>
+</div>
+
+
 

@@ -20,4 +20,9 @@ class Controller
     {
         header("Location: http://localhost:8080/$url");
     }
+
+    public function refresh()
+    {
+        header('Location: '.$_SERVER['HTTP_REFERER']);
+    }
 }

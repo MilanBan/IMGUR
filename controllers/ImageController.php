@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\CommentModel;
 use app\models\GalleryModel;
 use app\models\Helper;
 use app\models\ImageModel;
@@ -15,6 +16,7 @@ class ImageController extends Controller
     private UserModel $userM;
     private GalleryModel $galleryM;
     private ModeratorLogModel $moderatorLogM;
+    private CommentModel $commentM;
 
     public function __construct()
     {
@@ -22,6 +24,7 @@ class ImageController extends Controller
         $this->userM = new UserModel();
         $this->galleryM = new GalleryModel();
         $this->moderatorLogM = new ModeratorLogModel();
+        $this->commentM = new CommentModel();
 
     }
 
@@ -30,8 +33,9 @@ class ImageController extends Controller
         $image = $this->imageM->getImage(['slug',$slug]);
         $user = $this->userM->getUser(['id', $image->user_id]);
         $gallery = $this->galleryM->getGalleryByImage($image->id);
+        $comments = $this->commentM->getAll(['image_id', $image->id]);
 
-        $this->renderView('image/show', ['image' => $image, 'user' => $user, 'gallery' => $gallery]);
+        $this->renderView('image/show', ['image' => $image, 'user' => $user, 'gallery' => $gallery, 'comments'=> $comments]);
     }
 
     public function edit($slug)
