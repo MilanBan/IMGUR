@@ -27,7 +27,7 @@ class ImageController extends Controller
 
     public function show($slug)
     {
-        $image = $this->imageM->getImage($slug);
+        $image = $this->imageM->getImage(['slug',$slug]);
         $user = $this->userM->getUser(['id', $image->user_id]);
         $gallery = $this->galleryM->getGalleryByImage($image->id);
 
@@ -36,14 +36,14 @@ class ImageController extends Controller
 
     public function edit($slug)
     {
-        $image = $this->imageM->getImage($slug);
+        $image = $this->imageM->getImage(['slug', $slug]);
 
         $this->renderView('image/edit', ['image' => $image]);
     }
 
     public function update($slug)
     {
-        $image = $this->imageM->getImage($slug);
+        $image = $this->imageM->getImage(['slug', $slug]);
 
         $this->imageM->file_name = empty(trim($_POST['file_name'])) ? $image->file_name : trim($_POST['file_name']);
         $this->imageM->slug = empty(trim($_POST['slug'])) ? $image->slug : trim($_POST['slug']);
@@ -92,5 +92,19 @@ class ImageController extends Controller
             $this->imageM->insert();
             $this->redirect('imgur/galleries/'.$_POST['gallery_slug']);
         }
+    }
+
+    public function delete($id)
+    {
+        $image = $this->imageM->getImage(['id', $id]);
+        $gallery_slug = $_POST['gallery_slug'];
+
+        if (!$image){
+            return ['Image not exist'];
+        }
+
+        $this->imageM->delete($id);
+        Session::setFlash('delete', 'Image with id '.$id.' hes been deleted');
+        $this->redirect('imgur/galleries/'.$gallery_slug);
     }
 }

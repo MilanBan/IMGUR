@@ -91,9 +91,10 @@ class GalleryModel extends Model
         return $this->pdo->query($sql)->fetch();
     }
 
-    public function delete()
+    public function delete($id)
     {
-        var_dump('delete');
+        $sql = "DELETE FROM `gallery` WHERE `id` = $id";
+        $this->pdo->query($sql)->execute();
     }
 
     public function getGalleriesForUser($id, $start, $prePage)

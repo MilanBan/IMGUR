@@ -50,10 +50,11 @@ class ImageModel extends Model
         return $this->pdo->query($sql)->fetch();
     }
 
-    public function getImage($slug)
+    public function getImage($params)
     {
-        $sql = sprintf("SELECT * FROM `image` WHERE `slug` = '%s'",
-            $slug);
+        $sql = sprintf("SELECT * FROM `image` WHERE `%s` = '%s'",
+            $params[0],
+            $params[1]);
         return $this->pdo->query($sql)->fetch();
     }
 
@@ -109,5 +110,11 @@ class ImageModel extends Model
         }catch (\PDOException $e){
             return false;
         }
+    }
+
+    public function delete($id)
+    {
+        $sql = "DELETE FROM `image` WHERE `id` = $id";
+        $this->pdo->query($sql)->execute();
     }
 }

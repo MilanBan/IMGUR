@@ -106,6 +106,6 @@ class UserController extends Controller
             $this->moderatorLogM->logging();
         }
 
-        $this->redirect('imgur/profiles/'.Session::get('username'));
+        $this->redirect('imgur/profiles/'.Helper::encode($this->userM->username));
     }
 }

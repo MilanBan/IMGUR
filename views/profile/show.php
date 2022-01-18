@@ -4,7 +4,6 @@ use app\models\Helper;
 use app\models\Session;
 
 ?>
-
 <div class="d-flex flex-wrap justify-content-center">
     <div class="border-bottom rounded-pill">
         <h1 class="text-center mt-5">Profile: <strong><?= ucwords($data['user']->username); ?></strong></h1>
@@ -15,7 +14,7 @@ use app\models\Session;
                 <a class="btn btn-sm btn-primary" href="../galleries/create">Create Gallery</a>
            </div>
         <div class="btn-group d-flex justify-content-around m-4">
-            <a class="btn btn-sm btn-warning" href="./<?=Session::set('update', Helper::encode($data['user']->username)) . '/edit' ?>">Edit</a>
+            <a class="btn btn-sm btn-warning" href="./<?= Helper::encode($data['user']->username) ?>/edit">Edit</a>
             <a class="btn btn-sm btn-danger" href="#">Delete</a>
         </div>
         <?php endif; ?>

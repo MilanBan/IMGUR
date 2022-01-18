@@ -17,11 +17,18 @@ use app\models\Session;
     </div>
     <div class="card-footer text-center">
         <div class="d-flex justify-content-between">
+            <div>
             <a class="btn btn-sm btn-warning" href="/imgur/galleries/images/<?= $data['image']->slug ?>/edit">Edit</a>
-            <a class="btn btn-sm btn-danger" href="/nevodinigdejos">Delete</a>
+            </div>
+            <form id="form" method="post" action="/imgur/galleries/images/<?= $data['image']->id ?>">
+                <input type="hidden" name="gallery_slug" value="<?= $data['gallery']->slug ?>" >
+                <button class="btn btn-sm btn-danger" type="submit" >Delete</button>
+            </form>
         </div>
         <?php endif; ?>
     </div>
 </div>
 
 </div>
+
+

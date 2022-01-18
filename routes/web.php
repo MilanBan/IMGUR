@@ -25,6 +25,7 @@ $router->post('/imgur/galleries/images/{$slug}/update', '\app\controllers\ImageC
 $router->get('/imgur/galleries/images/{$slug}', '\app\controllers\ImageController@show');
 $router->get('/imgur/galleries/{$slug}/images/add', '\app\controllers\ImageController@create');
 $router->post('/imgur/galleries/{$slug}/images/add', '\app\controllers\ImageController@store');
+$router->post('/imgur/galleries/images/{$id}', '\app\controllers\ImageController@delete');
 
 // Gallery
 $router->get('/imgur/galleries/create', '\app\controllers\GalleryController@create');
@@ -32,6 +33,6 @@ $router->post('/imgur/galleries/create', '\app\controllers\GalleryController@sto
 $router->get('/imgur/galleries/{$slug}/edit', '\app\controllers\GalleryController@edit');
 $router->post('/imgur/galleries/{$slug}/update', '\app\controllers\GalleryController@update');
 $router->get('/imgur/galleries/{$slug}', '\app\controllers\GalleryController@show');
-$router->delete('/imgur/test/{$id}', '\app\controllers\GalleryController@delete');
+$router->post('/imgur/galleries/{$id}', '\app\controllers\GalleryController@delete');
 
 $router->run();

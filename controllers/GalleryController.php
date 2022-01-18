@@ -106,5 +106,19 @@ class GalleryController extends Controller
         }
     }
 
+    public function delete($id)
+    {
+        $gallery = $this->galleryM->getGallery(['id', $id]);
+
+        if (!$gallery){
+            return ['Gallery not exist'];
+        }
+
+        $this->galleryM->delete($id);
+
+        Session::setFlash('delete', 'Gallery with id :'.$id.' hes been deleted');
+
+        $this->redirect('./imgur/galleries/');
+    }
 
 }

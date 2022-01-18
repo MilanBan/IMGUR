@@ -6,6 +6,11 @@ use app\models\Session;
 
 <div class="d-flex flex-wrap justify-content-center">
     <div class="border-bottom rounded-pill">
+        <?php if ( Session::getFlash('delete') ) : ?>
+        <div class="d-flex justify-content-center bg-success p-3 m-3 rounded">
+            <?= Session::getFlash('delete') ?>
+        </div>
+        <?php endif; ?>
         <h1 class="text-center m-5">Gallery: <strong><?= ucwords($data['gallery']->name); ?></strong></h1>
         <a href="imgur/profiles/<?= $data['user']->username ?>">
             <h3 class="text-center m-3">(<?= $data['user']->username; ?>)</h3>
@@ -14,11 +19,18 @@ use app\models\Session;
         <?php if (Session::get('user')->id == $data['gallery']->user_id || in_array(Session::get('user')->role, ['moderator', 'admin'])) : ?>
             <div class="btn-group d-flex justify-content-around m-5">
                 <?php if (Session::get('user')->id == $data['gallery']->user_id) : ?>
+                <div>
                     <a class="btn btn-sm btn-success" href="./<?= $data['gallery']->slug ?>/images/add">Add Image</a>
+                </div>
                 <?php endif; ?>
-                <a class="btn btn-sm btn-warning" href="./<?= $data['gallery']->slug ?>/edit">Edit</a>
+                <div>
+                    <a class="btn btn-sm btn-warning" href="./<?= $data['gallery']->slug ?>/edit">Edit</a>
+                </div>
                 <?php if (Session::get('user')->id == $data['gallery']->user_id || Session::get('user')->role != 'moderator') : ?>
-                    <a class="btn btn-sm btn-danger" type="button" id="delete-gallery" data-id="<?= $data['gallery']->id ?>">Delete</a>
+                    <form id="form" method="post" action="/imgur/galleries/<?= $data['gallery']->id ?>">
+                        <input type="hidden">
+                        <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+                    </form>
                 <?php endif; ?>
             </div>
         <?php endif; ?>

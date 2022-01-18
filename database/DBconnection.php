@@ -20,7 +20,11 @@ class DBconnection {
 
   public function __construct(){}
 
-  public static function connect($dsn, $user, $password)
+  public function __wakeup(){}
+
+  public function __clone(){}
+
+    public static function connect($dsn, $user, $password)
   {
       self::$connection = new PDO($dsn, $user, $password);
       self::$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
