@@ -4,21 +4,46 @@ namespace app\models;
 
 class GalleryModel extends Model
 {
-    public function getAll($start, $prePage)
+    public function getAll($start, $prePage, $page)
     {
-        if (in_array(Session::get('user')->role, ['admin', 'moderator'])){
-            $sql = sprintf("SELECT * FROM `gallery` ORDER BY `id` DESC LIMIT %s, %s",
-                $start,
-                $prePage
-            );
+        if (in_array(Session::get('user')->role, ['admin', 'moderator']))
+        {
+            if (Redis::exists("a:site:galleries:$page"))
+            {
+                return Redis::cached("a:site:galleries:$page");
+
+            }else{
+                $sql = sprintf("SELECT * FROM `gallery` ORDER BY `id` DESC LIMIT %s, %s",
+                    $start,
+                    $prePage
+                );
+
+                $results = $this->pdo->query($sql)->fetchAll();
+
+                Redis::caching("a:site:galleries:$page", $results);
+
+                return $results;
+
+            }
         }else{
-            $sql = sprintf("SELECT * FROM `gallery` WHERE `hidden` = 0 AND `nsfw` = 0 ORDER BY `id` DESC  LIMIT %s, %s",
-                $start,
-                $prePage
-            );
+            if (Redis::exists("u:site:galleries:$page"))
+            {
+                return Redis::cached("u:site:galleries:$page");
+
+            }else{
+                $sql = sprintf("SELECT * FROM `gallery` WHERE `hidden` = 0 AND `nsfw` = 0 ORDER BY `id` DESC  LIMIT %s, %s",
+                    $start,
+                    $prePage
+                );
+
+                $results = $this->pdo->query($sql)->fetchAll();
+
+                Redis::caching("u:site:galleries:$page", $results);
+
+                return $results;
+            }
         }
 
-        return $this->pdo->query($sql)->fetchAll();
     }
 
     public function getGallery($params)
