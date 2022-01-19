@@ -4,21 +4,45 @@ namespace app\models;
 
 class ImageModel extends Model
 {
-    public function getAll($start, $prePage)
+    public function getAll($start, $prePage, $page)
     {
-        if (in_array(Session::get('user')->role, ['admin', 'moderator'])) {
-            $sql = sprintf("SELECT `slug`, `file_name` FROM `image` LIMIT %s, %s",
-                $start,
-                $prePage
-            );
-        } else {
-            $sql = sprintf("SELECT `slug`, `file_name` FROM `image` WHERE `hidden` = 0 AND `nsfw` = 0 LIMIT %s, %s",
-                $start,
-                $prePage
-            );
-        }
+        if (in_array(Session::get('user')->role, ['admin', 'moderator']))
+        {
+            if (Redis::exists("a:site:images:$page"))
+            {
+                return Redis::cached("a:site:images:$page");
 
-        return $this->pdo->query($sql)->fetchAll();
+            } else {
+                $sql = sprintf("SELECT `slug`, `file_name` FROM `image` LIMIT %s, %s",
+                    $start,
+                    $prePage
+                );
+
+                $results = $this->pdo->query($sql)->fetchAll();
+
+                Redis::caching("a:site:images:$page", $results);
+
+                return $results;
+            }
+        } else {
+            if (Redis::exists("u:site:images:$page"))
+            {
+                var_dump('is redisa');
+                return Redis::cached("u:site:images:$page");
+
+            } else {
+                $sql = sprintf("SELECT `slug`, `file_name` FROM `image` WHERE `hidden` = 0 AND `nsfw` = 0 LIMIT %s, %s",
+                    $start,
+                    $prePage
+                );
+
+                $results = $this->pdo->query($sql)->fetchAll();
+
+                Redis::caching("u:site:images:$page", $results);
+                var_dump('is konekcije');
+                return $results;
+            }
+        }
     }
 
     public function getAllByGallery($gallery_id, $start, $prePage)

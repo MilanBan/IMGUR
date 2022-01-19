@@ -18,6 +18,13 @@ class Redis
         }
     }
 
+    public static function exists($key)
+    {
+        self::getInstance();
+
+        return self::$cache->exists($key);
+    }
+
     public static function caching($key, $value)
     {
         self::getInstance();

@@ -24,7 +24,7 @@ class SiteController extends Controller
     {
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $prePage = isset($_GET['pre-page']) && $_GET['pre-page'] <= 50 ? (int)$_GET['pre-page'] : 20;
-        $start = ($page > 1) ? ($page * $prePage) - $prePage : 0;
+        $start = ($page > 1) ? ($page * $prePage) - $prePage : 1;
         $total = $this->imageM->getTotal()->total;
 
         $pages = ceil($total / $prePage);
@@ -38,7 +38,7 @@ class SiteController extends Controller
             'url' => '/imgur'
         ];
 
-        $images = $this->imageM->getAll($start, $prePage);
+        $images = $this->imageM->getAll($start, $prePage, $page);
 
         $this->renderView('home/index', ['images' => $images, 'pagination' => $pagination]);
     }
