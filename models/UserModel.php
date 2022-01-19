@@ -29,21 +29,45 @@ class UserModel extends Model
         return $this->pdo->query($sql)->fetch();
     }
 
-    public function getAll($start, $prePage)
+    public function getAll($start, $prePage, $page)
     {
-        if (in_array(Session::get('user')->role, ['admin', 'moderator'])){
-            $sql = sprintf("SELECT * FROM `user` LIMIT %s, %s",
-                $start,
-                $prePage
-            );
-        }else{
-            $sql = sprintf("SELECT * FROM `user` WHERE `active` = 1 AND `nsfw` = 0 LIMIT %s, %s",
-                $start,
-                $prePage
-            );
-        }
+        if (in_array(Session::get('user')->role, ['admin', 'moderator']))
+        {
+            if (Redis::exists("a:site:profiles:$page"))
+            {
+                return Redis::cached("a:site:profiles:$page");
 
-        return $this->pdo->query($sql)->fetchAll();
+            }else{
+                $sql = sprintf("SELECT * FROM `user` LIMIT %s, %s",
+                    $start,
+                    $prePage
+                );
+
+                $results = $this->pdo->query($sql)->fetchAll();
+
+                Redis::caching("a:site:profiles:$page", $results);
+
+                return $results;
+
+            }
+        }else{
+            if (Redis::exists("u:site:profiles:$page"))
+            {
+                return Redis::cached("u:site:profiles:$page");
+
+            }else{
+                $sql = sprintf("SELECT * FROM `user` WHERE `active` = 1 AND `nsfw` = 0 LIMIT %s, %s",
+                    $start,
+                    $prePage
+                );
+
+                $results = $this->pdo->query($sql)->fetchAll();
+
+                Redis::caching("u:site:profiles:$page", $results);
+
+                return $results;
+            }
+        }
     }
 
     public function insert()
