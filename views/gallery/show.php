@@ -12,7 +12,7 @@ use app\models\Session;
         </div>
         <?php endif; ?>
         <h1 class="text-center m-5">Gallery: <strong><?= ucwords($data['gallery']->name); ?></strong></h1>
-        <a href="imgur/profiles/<?= $data['user']->username ?>">
+        <a href="../profiles/<?=\app\models\Helper::encode($data['user']->username) ?>">
             <h3 class="text-center m-3">(<?= $data['user']->username; ?>)</h3>
         </a>
         <p class="text-center m-3"><?= $data['gallery']->description; ?></p>

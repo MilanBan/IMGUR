@@ -7,6 +7,7 @@ use app\models\GalleryModel;
 use app\models\Helper;
 use app\models\ImageModel;
 use app\models\ModeratorLogModel;
+use app\models\Redis;
 use app\models\Session;
 use app\models\UserModel;
 
@@ -38,7 +39,7 @@ class GalleryController extends Controller
 
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $prePage = isset($_GET['pre-page']) && $_GET['pre-page'] <= 50 ? (int)$_GET['pre-page'] : 20;
-        $start = ($page > 1) ? ($page * $prePage) - $prePage : 0;
+        $start = ($page > 1) ? ($page * $prePage) - $prePage : 1;
         $total = $this->imageM->getTotal($gallery->id)->total;
         $pages = ceil($total / $prePage);
 
@@ -51,7 +52,7 @@ class GalleryController extends Controller
             'url' => '/imgur/galleries/'.$gallery->slug
         ];
 
-        $images = $this->imageM->getAllByGallery($gallery->id, $start, $prePage);
+        $images = $this->imageM->getAllByGallery($gallery->id, $start, $prePage, $page);
 
         $this->renderView('gallery/show', ['gallery' => $gallery, 'images' => $images, 'user' => $user, 'pagination' => $pagination, 'comments' => $comments]);
     }
@@ -87,6 +88,9 @@ class GalleryController extends Controller
             $this->moderatorLogM->logging();
         }
 
+        Redis::remove("a:site:galleries:*");
+        Redis::remove("u:site:galleries:*");
+
         $this->redirect('imgur/galleries');
     }
 
@@ -110,6 +114,10 @@ class GalleryController extends Controller
             $this->galleryM->slug = Helper::slugify(trim($_POST["name"]).'-'.time());
 
             $this->galleryM->insert();
+
+            Redis::remove("a:site:galleries:*");
+            Redis::remove("u:site:galleries:*");
+
             $this->redirect('imgur/profiles/'.Session::get('username'));
         }
     }
@@ -123,6 +131,9 @@ class GalleryController extends Controller
         }
 
         $this->galleryM->delete($id);
+
+        Redis::remove("a:site:galleries:*");
+        Redis::remove("u:site:galleries:*");
 
         Session::setFlash('delete', 'Gallery with id :'.$id.' hes been deleted');
 

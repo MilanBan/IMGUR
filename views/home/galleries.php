@@ -3,13 +3,14 @@
 use app\models\Session;
 
 ?>
-
 <div class="d-flex flex-wrap justify-content-center">
-    <?php if ( Session::getFlash('delete') ) : ?>
-        <div class="d-flex justify-content-center bg-success p-3 m-3 rounded">
-            <?= Session::getFlash('delete') ?>
-        </div>
-    <?php endif; ?>
+<?php if ( Session::getFlash('delete') ) : ?>
+    <div class="d-flex justify-content-center bg-success p-3 m-3 rounded">
+        <?= Session::getFlash('delete') ?>
+    </div>
+<?php endif; ?>
+</div>
+<div class="d-flex flex-wrap justify-content-center">
     <?php if (isset($data['galleries'])) : ?>
         <?php foreach ($data['galleries'] as $gallery) : ?>
             <div class="card m-1 border border-primary" style="width: 16rem;">

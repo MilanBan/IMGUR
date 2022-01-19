@@ -10,6 +10,7 @@ class GalleryModel extends Model
         {
             if (Redis::exists("a:site:galleries:$page"))
             {
+                var_dump('redis getAll gallery');
                 return Redis::cached("a:site:galleries:$page");
 
             }else{
@@ -21,6 +22,7 @@ class GalleryModel extends Model
                 $results = $this->pdo->query($sql)->fetchAll();
 
                 Redis::caching("a:site:galleries:$page", $results);
+                var_dump('db getAll gallery');
 
                 return $results;
 

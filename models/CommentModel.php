@@ -7,12 +7,23 @@ class CommentModel extends Model
 
     public function getAll(array $params)
     {
-        $sql = sprintf("SELECT comment.`comment`, user.`username`, comment.`id` FROM `comment` INNER JOIN `user` ON comment.`user_id` = user.`id` WHERE comment.`%s` = '%s' ORDER BY comment.`id` DESC",
-            $params[0],
-            $params[1]
-        );
+        if (Redis::exists("gallery:comments"))
+        {
+            var_dump('redis comments');
+            return Redis::cached("gallery:comments");
 
-        return $this->pdo->query($sql)->fetchAll();
+        }else{
+            $sql = sprintf("SELECT comment.`comment`, user.`username`, comment.`id` FROM `comment` INNER JOIN `user` ON comment.`user_id` = user.`id` WHERE comment.`%s` = '%s' ORDER BY comment.`id` DESC",
+                $params[0],
+                $params[1]
+            );
+
+            $results = $this->pdo->query($sql)->fetchAll();
+
+            Redis::caching("gallery:comments", $results);
+var_dump('db comments');
+            return $results;
+        }
     }
 
     public function insert()

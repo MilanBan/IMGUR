@@ -47,6 +47,10 @@ class Redis
 
     public static function remove($key)
     {
-        self::$cache->del($key);
+        self::getInstance();
+
+        if (self::$cache->exists($key)){
+            self::$cache->del($key);
+        }
     }
 }

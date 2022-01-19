@@ -10,6 +10,8 @@ class ImageModel extends Model
         {
             if (Redis::exists("a:site:images:$page"))
             {
+                var_dump('redis getAll images');
+
                 return Redis::cached("a:site:images:$page");
 
             } else {
@@ -21,6 +23,7 @@ class ImageModel extends Model
                 $results = $this->pdo->query($sql)->fetchAll();
 
                 Redis::caching("a:site:images:$page", $results);
+                var_dump('db getAll images');
 
                 return $results;
             }
@@ -45,15 +48,26 @@ class ImageModel extends Model
         }
     }
 
-    public function getAllByGallery($gallery_id, $start, $prePage)
+    public function getAllByGallery($gallery_id, $start, $prePage, $page)
     {
-        $sql = sprintf("SELECT i.`slug`, i.`file_name` FROM `image` i INNER JOIN `image_gallery` ig ON i.`id` = ig.`image_id` WHERE ig.`gallery_id` = %s ORDER BY i.`id` DESC LIMIT %s, %s",
-            $gallery_id,
-            $start,
-            $prePage
-        );
+        if (Redis::exists("gallery:show:$page"))
+        {
+            var_dump('redis getAllByGallery images');
+            return Redis::cached("gallery:show:$page");
 
-        return $this->pdo->query($sql)->fetchAll();
+        }else {
+            $sql = sprintf("SELECT i.`slug`, i.`file_name` FROM `image` i INNER JOIN `image_gallery` ig ON i.`id` = ig.`image_id` WHERE ig.`gallery_id` = %s ORDER BY i.`id` DESC LIMIT %s, %s",
+                $gallery_id,
+                $start,
+                $prePage
+            );
+
+            $results = $this->pdo->query($sql)->fetchAll();
+
+            Redis::caching("gallery:show:$page", $results);
+            var_dump('db getAllByGallery images');
+            return $results;
+        }
     }
 
 
