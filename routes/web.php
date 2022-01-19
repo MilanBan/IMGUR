@@ -38,4 +38,13 @@ $router->post('/imgur/galleries/{$id}', '\app\controllers\GalleryController@dele
 // Comment
 $router->post('/imgur/comments', '\app\controllers\CommentController@store');
 
+$router->get('/test', function (){
+    \app\models\Redis::caching('test', 'ovo je is redisa');
+    echo \app\models\Redis::cached('test').'<br>';
+    \app\models\Redis::reCaching('test', 'recachiran redis podatak');
+    echo \app\models\Redis::cached('test').'<br>';
+    \app\models\Redis::remove('test');
+    echo \app\models\Redis::cached('test') ?? ('obrisan'.'<br>');
+});
+
 $router->run();
