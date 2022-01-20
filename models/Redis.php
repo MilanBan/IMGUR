@@ -45,12 +45,12 @@ class Redis
         self::$cache->expire($key, (5*60));
     }
 
-    public static function remove($key)
+    public static function remove($pattern)
     {
         self::getInstance();
-
-        if (self::$cache->exists($key)){
-            self::$cache->del($key);
+        $keys = self::$cache->keys($pattern);
+        if ($keys > 0){
+            self::$cache->del($keys);
         }
     }
 }

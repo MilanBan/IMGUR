@@ -7,6 +7,7 @@ use app\models\GalleryModel;
 use app\models\Helper;
 use app\models\ImageModel;
 use app\models\ModeratorLogModel;
+use app\models\Redis;
 use app\models\Session;
 use app\models\UserModel;
 
@@ -68,6 +69,9 @@ class ImageController extends Controller
             $this->moderatorLogM->logging();
         }
 
+        Redis::remove('*:site:images:*');
+        Redis::remove('gallery:show:*');
+
         $this->redirect('imgur/galleries/images/'.$this->imageM->slug);
     }
 
@@ -94,6 +98,10 @@ class ImageController extends Controller
             $this->imageM->user_id = Session::get('user')->id;
 
             $this->imageM->insert();
+
+            Redis::remove('*:site:images:*');
+            Redis::remove('gallery:show:*');
+
             $this->redirect('imgur/galleries/'.$_POST['gallery_slug']);
         }
     }
@@ -108,7 +116,12 @@ class ImageController extends Controller
         }
 
         $this->imageM->delete($id);
+
         Session::setFlash('delete', 'Image with id '.$id.' hes been deleted');
+
+        Redis::remove('*:site:images:*');
+        Redis::remove('gallery:show:*');
+
         $this->redirect('imgur/galleries/'.$gallery_slug);
     }
 }

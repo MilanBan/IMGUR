@@ -88,8 +88,7 @@ class GalleryController extends Controller
             $this->moderatorLogM->logging();
         }
 
-        Redis::remove("a:site:galleries:*");
-        Redis::remove("u:site:galleries:*");
+        Redis::remove("*:site:galleries:*");
 
         $this->redirect('imgur/galleries');
     }
@@ -115,8 +114,7 @@ class GalleryController extends Controller
 
             $this->galleryM->insert();
 
-            Redis::remove("a:site:galleries:*");
-            Redis::remove("u:site:galleries:*");
+            Redis::remove("*:site:galleries:*");
 
             $this->redirect('imgur/profiles/'.Session::get('username'));
         }
@@ -132,8 +130,7 @@ class GalleryController extends Controller
 
         $this->galleryM->delete($id);
 
-        Redis::remove("a:site:galleries:*");
-        Redis::remove("u:site:galleries:*");
+        Redis::remove("*:site:galleries:*");
 
         Session::setFlash('delete', 'Gallery with id :'.$id.' hes been deleted');
 
