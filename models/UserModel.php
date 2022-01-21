@@ -35,6 +35,7 @@ class UserModel extends Model
         {
             if (Redis::exists("a:site:profiles:$page"))
             {
+                var_dump('all users from redis');
                 return Redis::cached("a:site:profiles:$page");
 
             }else{
@@ -46,6 +47,7 @@ class UserModel extends Model
                 $results = $this->pdo->query($sql)->fetchAll();
 
                 Redis::caching("a:site:profiles:$page", $results);
+                var_dump('all users from db');
 
                 return $results;
 
@@ -83,8 +85,30 @@ class UserModel extends Model
         $sql = "INSERT INTO user (username, email, password, role, api_key) VALUES (:username, :email, :password, :role, :api_key)";
 
         $this->pdo->prepare($sql)->execute($data);
+        Redis::remove("*:site:profiles:*");
 
         return $this->pdo->lastInsertId();
+    }
+
+    public function update($id)
+    {
+        $data = [
+            'username' => $this->username,
+            'email' => $this->email,
+            'active' => $this->active,
+            'nsfw' => $this->nsfw,
+            'role' => $this->role,
+            'id' => $id
+        ];
+
+        $sql = "UPDATE user SET username = :username, email = :email, active = :active, nsfw = :nsfw, role = :role WHERE id=:id";
+
+        try {
+            $this->pdo->prepare($sql)->execute($data);
+            return true;
+        }catch (\PDOException $e){
+            return false;
+        }
     }
 
     public function getTotal()
@@ -182,27 +206,6 @@ class UserModel extends Model
         }
         if ($this->confirm_password !== $this->password){
             $this->errors['$this->confirm_password'] = 'Password did not match. Please try again.';
-        }
-    }
-
-    public function update($id)
-    {
-        $data = [
-            'username' => $this->username,
-            'email' => $this->email,
-            'active' => $this->active,
-            'nsfw' => $this->nsfw,
-            'role' => $this->role,
-            'id' => $id
-        ];
-
-        $sql = "UPDATE user SET username = :username, email = :email, active = :active, nsfw = :nsfw, role = :role WHERE id=:id";
-
-        try {
-            $this->pdo->prepare($sql)->execute($data);
-            return true;
-        }catch (\PDOException $e){
-            return false;
         }
     }
 

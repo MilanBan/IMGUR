@@ -35,11 +35,11 @@ class GalleryController extends Controller
 
         $user = $this->userM->getUser(['id', $gallery->user_id]);
 
-        $comments = $this->commentM->getAll(['gallery_id',$gallery->id]);
+        $comments = $this->commentM->getAll(['gallery',$gallery->id]);
 
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $prePage = isset($_GET['pre-page']) && $_GET['pre-page'] <= 50 ? (int)$_GET['pre-page'] : 20;
-        $start = ($page > 1) ? ($page * $prePage) - $prePage : 1;
+        $start = ($page > 1) ? ($page * $prePage) - $prePage : 0;
         $total = $this->imageM->getTotal($gallery->id)->total;
         $pages = ceil($total / $prePage);
 
@@ -114,7 +114,8 @@ class GalleryController extends Controller
 
             $this->galleryM->insert();
 
-            Redis::remove("*:site:galleries:*");
+            Redis::remove("*:galleries:*");
+            Redis::remove("*:images:*");
 
             $this->redirect('imgur/profiles/'.Session::get('username'));
         }
@@ -130,7 +131,7 @@ class GalleryController extends Controller
 
         $this->galleryM->delete($id);
 
-        Redis::remove("*:site:galleries:*");
+        Redis::remove("*:galleries:*");
 
         Session::setFlash('delete', 'Gallery with id :'.$id.' hes been deleted');
 

@@ -44,7 +44,8 @@ $router->get('/test', function (){
     echo \app\models\Redis::cached('test').'<br>';
     \app\models\Redis::reCaching('test', 'recachiran redis podatak');
     echo \app\models\Redis::cached('test').'<br>';
-    \app\models\Redis::remove('test*');
+    \app\models\Redis::remove('test:*');
+    \app\models\Redis::remove('tes*');
     echo \app\models\Redis::cached('test') ?? ('obrisan'.'<br>');
     echo \app\models\Redis::cached('test:2') ?? ('obrisan'.'<br>');
 });

@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\models\GalleryModel;
 use app\models\Helper;
 use app\models\ModeratorLogModel;
+use app\models\Redis;
 use app\models\Session;
 use app\models\UserModel;
 
@@ -22,12 +23,12 @@ class UserController extends Controller
         $this->moderatorLogM = new ModeratorLogModel();
     }
 
-    public function profile()
-    {
-        $user = $this->userM->getUser(['id', Session::get('user')->id]);
-
-        $this->renderView('home', ['user' => $user]);
-    }
+//    public function profile()
+//    {
+//        $user = $this->userM->getUser(['id', Session::get('user')->id]);
+//
+//        $this->renderView('home', ['user' => $user]);
+//    }
 
     public function show($username)
     {
@@ -40,7 +41,7 @@ class UserController extends Controller
 
         $pages = ceil($total / $prePage);
 
-        $galleries = $this->galleryM->getGalleriesForUser($user->id, $start, $prePage);
+        $galleries = $this->galleryM->getGalleriesForUser($user->id, $start, $prePage, $page);
 
         $pagination =[
             'page' => $page,
@@ -106,6 +107,8 @@ class UserController extends Controller
             $this->moderatorLogM->logging();
         }
 
-        $this->redirect('imgur/profiles/'.Helper::encode($this->userM->username));
+        Redis::remove("*:profiles:*");
+
+        $this->redirect('imgur/profiles/');
     }
 }

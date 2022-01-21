@@ -17,6 +17,7 @@ use app\models\Session;
         <div class="card-footer text-center">
             <div class="d-flex justify-content-between">
                 <div>
+                    <?php Session::set('gallery_slug', $data['gallery']->slug); ?>
                     <a class="btn btn-sm btn-warning" href="/imgur/galleries/images/<?= $data['image']->slug ?>/edit">Edit</a>
                 </div>
                 <form id="form" method="post" action="/imgur/galleries/images/<?= $data['image']->id ?>">
@@ -27,9 +28,9 @@ use app\models\Session;
             <?php endif; ?>
         </div>
     </div>
-    <div class="row justify-content-center">
-        <?php require __DIR__.'/../includes/comments.php'; ?>
-    </div>
+</div>
+<div class="row justify-content-center">
+    <?php require __DIR__.'/../includes/comments.php'; ?>
 </div>
 
 

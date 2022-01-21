@@ -83,12 +83,30 @@ class GalleryModel extends Model
     public function getCover($id)
     {
         if (in_array(Session::get('user')->role, ['admin', 'moderator'])) {
-            $sql = "SELECT i.`file_name` FROM `image` i INNER JOIN `image_gallery` ig ON i.`id` = ig.`image_id` WHERE ig.`gallery_id` = '$id' ORDER BY i.`id` DESC LIMIT 1";
-        }else{
-            $sql = "SELECT i.`file_name` FROM `image` i INNER JOIN `image_gallery` ig ON i.`id` = ig.`image_id` WHERE ig.`gallery_id` = '$id' AND i.`hidden` = 0 AND i.`nsfw` = 0 ORDER BY i.`id` DESC LIMIT 1";
-        }
+            if (Redis::exists("a:galleries:$id:cover"))
+            {
+                var_dump('trigerovao iz redisa : '.$id);
+                return Redis::cached("a:galleries:$id:cover");
+            } else {
+                $sql = "SELECT i.`file_name` FROM `image` i INNER JOIN `image_gallery` ig ON i.`id` = ig.`image_id` WHERE ig.`gallery_id` = '$id' ORDER BY i.`id` DESC LIMIT 1";
+                $results = $this->pdo->query($sql)->fetchColumn();
+                Redis::caching("a:galleries:$id:cover", $results);
+                var_dump('trigerovao iz db : '.$id);
 
-        return $this->pdo->query($sql)->fetchColumn();
+                return $results;
+            }
+        }else{
+            if (Redis::exists("u:galleries:$id:cover"))
+            {
+                return Redis::cached("u:galleries:$id:cover");
+            } else {
+                $sql = "SELECT i.`file_name` FROM `image` i INNER JOIN `image_gallery` ig ON i.`id` = ig.`image_id` WHERE ig.`gallery_id` = '$id' AND i.`hidden` = 0 AND i.`nsfw` = 0 ORDER BY i.`id` DESC LIMIT 1";
+                $results = $this->pdo->query($sql)->fetchColumn();
+                Redis::caching("u:galleries:$id:cover", $results);
+
+                return $results;
+            }
+        }
     }
 
     public function update($id)
@@ -102,6 +120,7 @@ class GalleryModel extends Model
         ];
 
         $sql = "UPDATE gallery SET name=:name, description=:description, hidden=:hidden, nsfw=:nsfw WHERE id=:id";
+
 
         try {
             $this->pdo->prepare($sql)->execute($data);
@@ -124,15 +143,26 @@ class GalleryModel extends Model
         $this->pdo->query($sql)->execute();
     }
 
-    public function getGalleriesForUser($id, $start, $prePage)
+    public function getGalleriesForUser($id, $start, $prePage, $page)
     {
-        $sql = sprintf("SELECT * FROM gallery WHERE user_id = %s ORDER BY id DESC LIMIT %s, %s",
-            $id,
-            $start,
-            $prePage
-        );
+        if (Redis::exists("users:$id:site:galleries:$page"))
+        {
+            var_dump('user gallery from redis');
+            return Redis::cached("users:$id:site:galleries:$page");
+        }else{
+            $sql = sprintf("SELECT * FROM gallery WHERE user_id = %s ORDER BY id DESC LIMIT %s, %s",
+                $id,
+                $start,
+                $prePage
+            );
 
-        return $this->pdo->query($sql)->fetchAll();
+            $results = $this->pdo->query($sql)->fetchAll();
+
+            Redis::caching("users:$id:site:galleries:$page", $results);
+            var_dump('user gallery from db');
+
+            return $results;
+        }
     }
 
     public function insert()

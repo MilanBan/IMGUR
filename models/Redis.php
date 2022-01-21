@@ -8,7 +8,7 @@ class Redis
 {
 
     private static $instance = false;
-    private static $cache;
+    public static $cache;
 
     private static function getInstance()
     {
@@ -49,7 +49,7 @@ class Redis
     {
         self::getInstance();
         $keys = self::$cache->keys($pattern);
-        if ($keys > 0){
+        if (count($keys)){
             self::$cache->del($keys);
         }
     }

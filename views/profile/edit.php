@@ -3,7 +3,11 @@
 use app\models\Helper;
 use app\models\Session;
 ?>
-
+<?= var_dump($data['user'])  ?>
+<?= var_dump(empty(trim($_POST['username'])))  ?>
+<?= var_dump(Helper::encode($data['user']->username))  ?>
+<?= var_dump(Helper::encode(trim($_POST['username'])))  ?>
+<?= var_dump("url: " . empty(trim($_POST['username'])) ? Helper::encode($data['user']->username) : Helper::encode(trim($_POST['username'])))   ?>
 <form method="post" action="../<?= !empty(trim($_POST['username'])) ? Helper::encode(trim($_POST['username'])) : Helper::encode($data['user']->username) ?>/update">
     <?php if (Session::get('user')->id == $data['user']->id) : ?>
         <div class="form-group mb-3">

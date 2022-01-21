@@ -24,7 +24,7 @@ class SiteController extends Controller
     {
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $prePage = isset($_GET['pre-page']) && $_GET['pre-page'] <= 50 ? (int)$_GET['pre-page'] : 20;
-        $start = ($page > 1) ? ($page * $prePage) - $prePage : 1;
+        $start = ($page > 1) ? ($page * $prePage) - $prePage : 0;
         $total = $this->imageM->getTotal()->total;
 
         $pages = ceil($total / $prePage);
@@ -51,7 +51,7 @@ class SiteController extends Controller
 
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $prePage = isset($_GET['pre-page']) && $_GET['pre-page'] <= 50 ? (int)$_GET['pre-page'] : 20;
-        $start = ($page > 1) ? ($page * $prePage) - $prePage : 1;
+        $start = ($page > 1) ? ($page * $prePage) - $prePage : 0;
         $total = $this->galleryM->getTotal()->total;
 
         $pages = ceil($total / $prePage);
@@ -85,7 +85,7 @@ class SiteController extends Controller
 
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $prePage = isset($_GET['pre-page']) && $_GET['pre-page'] <= 50 ? (int)$_GET['pre-page'] : 20;
-        $start = ($page > 1) ? ($page * $prePage) - $prePage : 1;
+        $start = ($page > 1) ? ($page * $prePage) - $prePage : 0;
         $total = $this->userM->getTotal()->total;
 
         $pages = ceil($total / $prePage);

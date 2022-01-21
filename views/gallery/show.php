@@ -6,9 +6,9 @@ use app\models\Session;
 
 <div class="d-flex flex-wrap justify-content-center">
     <div class="border-bottom rounded-pill">
-        <?php if ( Session::getFlash('delete') ) : ?>
+        <?php if ( Session::getFlash('msg') ) : ?>
         <div class="d-flex justify-content-center bg-success p-3 m-3 rounded">
-            <?= Session::getFlash('delete') ?>
+            <?= Session::getFlash('msg') ?>
         </div>
         <?php endif; ?>
         <h1 class="text-center m-5">Gallery: <strong><?= ucwords($data['gallery']->name); ?></strong></h1>
