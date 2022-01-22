@@ -23,13 +23,6 @@ class UserController extends Controller
         $this->moderatorLogM = new ModeratorLogModel();
     }
 
-//    public function profile()
-//    {
-//        $user = $this->userM->getUser(['id', Session::get('user')->id]);
-//
-//        $this->renderView('home', ['user' => $user]);
-//    }
-
     public function show($username)
     {
         $user = $this->userM->getUser(['username', Helper::decode($username)]);
