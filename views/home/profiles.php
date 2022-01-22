@@ -14,7 +14,6 @@ use app\models\Session;
                     <h5 class="card-title"><?= $user->username ?></h5>
                     <?php if (Session::get('user')->id == $user->id || in_array(Session::get('user')->role, ['moderator', 'admin'])) : ?>
                         <a class="btn btn-sm btn-warning" href="/imgur/profiles/<?= Helper::encode($user->username) ?>/edit">Edit</a>
-                        <a class="btn btn-sm btn-danger" href="#">Delete</a>
                     <?php endif ?>
                 </div>
             </div>

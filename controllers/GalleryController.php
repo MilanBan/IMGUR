@@ -2,10 +2,12 @@
 
 namespace app\controllers;
 
+use app\models\CommentModel;
 use app\models\GalleryModel;
 use app\models\Helper;
 use app\models\ImageModel;
 use app\models\ModeratorLogModel;
+use app\models\Redis;
 use app\models\Session;
 use app\models\UserModel;
 
@@ -15,6 +17,7 @@ class GalleryController extends Controller
     private ImageModel $imageM;
     private UserModel $userM;
     private ModeratorLogModel $moderatorLogM;
+    private CommentModel $commentM;
 
     public function __construct()
     {
@@ -22,13 +25,18 @@ class GalleryController extends Controller
         $this->imageM = new ImageModel();
         $this->userM = new UserModel();
         $this->moderatorLogM = new ModeratorLogModel();
+        $this->commentM = new CommentModel();
 
     }
 
     public function show($slug)
     {
         $gallery = $this->galleryM->getGallery(['slug', $slug]);
+
         $user = $this->userM->getUser(['id', $gallery->user_id]);
+
+        $comments = $this->commentM->getAll(['gallery',$gallery->id]);
+
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $prePage = isset($_GET['pre-page']) && $_GET['pre-page'] <= 50 ? (int)$_GET['pre-page'] : 20;
         $start = ($page > 1) ? ($page * $prePage) - $prePage : 0;
@@ -44,8 +52,9 @@ class GalleryController extends Controller
             'url' => '/imgur/galleries/'.$gallery->slug
         ];
 
-        $images = $this->imageM->getAllByGallery($gallery->id, $start, $prePage);
-        $this->renderView('gallery/show', ['gallery' => $gallery, 'images' => $images, 'user' => $user, 'pagination' => $pagination]);
+        $images = $this->imageM->getAllByGallery($gallery->id, $start, $prePage, $page);
+
+        $this->renderView('gallery/show', ['gallery' => $gallery, 'images' => $images, 'user' => $user, 'pagination' => $pagination, 'comments' => $comments]);
     }
 
     public function edit($slug)
@@ -79,6 +88,8 @@ class GalleryController extends Controller
             $this->moderatorLogM->logging();
         }
 
+        Redis::remove("*:site:galleries:*");
+
         $this->redirect('imgur/galleries');
     }
 
@@ -102,6 +113,10 @@ class GalleryController extends Controller
             $this->galleryM->slug = Helper::slugify(trim($_POST["name"]).'-'.time());
 
             $this->galleryM->insert();
+
+            Redis::remove("*:galleries:*");
+            Redis::remove("*:images:*");
+
             $this->redirect('imgur/profiles/'.Session::get('username'));
         }
     }
@@ -115,6 +130,8 @@ class GalleryController extends Controller
         }
 
         $this->galleryM->delete($id);
+
+        Redis::remove("*:galleries:*");
 
         Session::setFlash('delete', 'Gallery with id :'.$id.' hes been deleted');
 

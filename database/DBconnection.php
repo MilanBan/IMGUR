@@ -24,9 +24,9 @@ class DBconnection {
 
   public function __clone(){}
 
-    public static function connect($dsn, $user, $password)
+    public static function connect()
   {
-      self::$connection = new PDO($dsn, $user, $password);
+      self::$connection = new PDO($_ENV["DB_DSN"], $_ENV['DB_USER'], $_ENV['DB_PASSWORD']);
       self::$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
       self::$connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
   }

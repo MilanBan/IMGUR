@@ -6,13 +6,13 @@ use app\models\Session;
 
 <div class="d-flex flex-wrap justify-content-center">
     <div class="border-bottom rounded-pill">
-        <?php if ( Session::getFlash('delete') ) : ?>
+        <?php if ( Session::getFlash('msg') ) : ?>
         <div class="d-flex justify-content-center bg-success p-3 m-3 rounded">
-            <?= Session::getFlash('delete') ?>
+            <?= Session::getFlash('msg') ?>
         </div>
         <?php endif; ?>
         <h1 class="text-center m-5">Gallery: <strong><?= ucwords($data['gallery']->name); ?></strong></h1>
-        <a href="imgur/profiles/<?= $data['user']->username ?>">
+        <a href="../profiles/<?=\app\models\Helper::encode($data['user']->username) ?>">
             <h3 class="text-center m-3">(<?= $data['user']->username; ?>)</h3>
         </a>
         <p class="text-center m-3"><?= $data['gallery']->description; ?></p>
@@ -52,4 +52,9 @@ use app\models\Session;
 <div class="row justify-content-center">
     <?php require __DIR__ . '/../includes/pagination.php'; ?>
 </div>
+<div class="row justify-content-center">
+    <?php require __DIR__.'/../includes/comments.php'; ?>
+</div>
+
+
 

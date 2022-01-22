@@ -2,10 +2,12 @@
 
 namespace app\controllers;
 
+use app\models\CommentModel;
 use app\models\GalleryModel;
 use app\models\Helper;
 use app\models\ImageModel;
 use app\models\ModeratorLogModel;
+use app\models\Redis;
 use app\models\Session;
 use app\models\UserModel;
 
@@ -15,6 +17,7 @@ class ImageController extends Controller
     private UserModel $userM;
     private GalleryModel $galleryM;
     private ModeratorLogModel $moderatorLogM;
+    private CommentModel $commentM;
 
     public function __construct()
     {
@@ -22,6 +25,7 @@ class ImageController extends Controller
         $this->userM = new UserModel();
         $this->galleryM = new GalleryModel();
         $this->moderatorLogM = new ModeratorLogModel();
+        $this->commentM = new CommentModel();
 
     }
 
@@ -30,8 +34,9 @@ class ImageController extends Controller
         $image = $this->imageM->getImage(['slug',$slug]);
         $user = $this->userM->getUser(['id', $image->user_id]);
         $gallery = $this->galleryM->getGalleryByImage($image->id);
+        $comments = $this->commentM->getAll(['image', $image->id]);
 
-        $this->renderView('image/show', ['image' => $image, 'user' => $user, 'gallery' => $gallery]);
+        $this->renderView('image/show', ['image' => $image, 'user' => $user, 'gallery' => $gallery, 'comments'=> $comments]);
     }
 
     public function edit($slug)
@@ -46,7 +51,7 @@ class ImageController extends Controller
         $image = $this->imageM->getImage(['slug', $slug]);
 
         $this->imageM->file_name = empty(trim($_POST['file_name'])) ? $image->file_name : trim($_POST['file_name']);
-        $this->imageM->slug = empty(trim($_POST['slug'])) ? $image->slug : trim($_POST['slug']);
+        $this->imageM->slug = (empty(trim($_POST['slug'])) || trim($_POST['slug']) == $image->slug) ? $image->slug : Helper::slugify(trim($_POST['slug'].'-'.$image->id));
         $this->imageM->hidden = $_POST['hidden'] ? '1' : '0';
         $this->imageM->nsfw = $_POST['nsfw'] ? '1' : '0';
 
@@ -64,7 +69,14 @@ class ImageController extends Controller
             $this->moderatorLogM->logging();
         }
 
-        $this->redirect('imgur/galleries/images/'.$this->imageM->slug);
+        $gallery_slug = Session::get('gallery_slug');
+        $this->galleryM->session->remove('gallery_slug');
+
+        Session::setFlash('msg', 'Image with id '.$image->id.' hes been updated');
+
+        Redis::remove("*:images:*");
+
+        $this->redirect('imgur/galleries/'.$gallery_slug);
     }
 
     public function create($slug)
@@ -90,7 +102,14 @@ class ImageController extends Controller
             $this->imageM->user_id = Session::get('user')->id;
 
             $this->imageM->insert();
-            $this->redirect('imgur/galleries/'.$_POST['gallery_slug']);
+            $gallery_id = $this->imageM->gallery_id;
+            Redis::remove('*:images:*');
+            if ($this->imageM->gallery_id){
+                Redis::remove("*:galleries:$gallery_id:*");
+                Redis::remove("gallery:$gallery_id:show:images:*");
+            }
+
+            $this->redirect('imgur/galleries/');
         }
     }
 
@@ -104,7 +123,11 @@ class ImageController extends Controller
         }
 
         $this->imageM->delete($id);
-        Session::setFlash('delete', 'Image with id '.$id.' hes been deleted');
+
+        Session::setFlash('msg', 'Image with id '.$id.' hes been deleted');
+
+        Redis::remove('*:images:*');
+
         $this->redirect('imgur/galleries/'.$gallery_slug);
     }
 }

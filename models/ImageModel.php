@@ -4,32 +4,69 @@ namespace app\models;
 
 class ImageModel extends Model
 {
-    public function getAll($start, $prePage)
+    public function getAll($start, $prePage, $page)
     {
-        if (in_array(Session::get('user')->role, ['admin', 'moderator'])) {
-            $sql = sprintf("SELECT `slug`, `file_name` FROM `image` LIMIT %s, %s",
-                $start,
-                $prePage
-            );
-        } else {
-            $sql = sprintf("SELECT `slug`, `file_name` FROM `image` WHERE `hidden` = 0 AND `nsfw` = 0 LIMIT %s, %s",
-                $start,
-                $prePage
-            );
-        }
+        if (in_array(Session::get('user')->role, ['admin', 'moderator']))
+        {
+            if (Redis::exists("a:site:images:$page"))
+            {
+                var_dump('redis getAll images');
 
-        return $this->pdo->query($sql)->fetchAll();
+                return Redis::cached("a:site:images:$page");
+
+            } else {
+                $sql = sprintf("SELECT `slug`, `file_name` FROM `image` LIMIT %s, %s",
+                    $start,
+                    $prePage
+                );
+
+                $results = $this->pdo->query($sql)->fetchAll();
+
+                Redis::caching("a:site:images:$page", $results);
+                var_dump('db getAll images');
+
+                return $results;
+            }
+        } else {
+            if (Redis::exists("u:site:images:$page"))
+            {
+                var_dump('is redisa');
+                return Redis::cached("u:site:images:$page");
+
+            } else {
+                $sql = sprintf("SELECT `slug`, `file_name` FROM `image` WHERE `hidden` = 0 AND `nsfw` = 0 LIMIT %s, %s",
+                    $start,
+                    $prePage
+                );
+
+                $results = $this->pdo->query($sql)->fetchAll();
+
+                Redis::caching("u:site:images:$page", $results);
+                var_dump('is konekcije');
+                return $results;
+            }
+        }
     }
 
-    public function getAllByGallery($gallery_id, $start, $prePage)
+    public function getAllByGallery($gallery_id, $start, $prePage, $page)
     {
-        $sql = sprintf("SELECT i.`slug`, i.`file_name` FROM `image` i INNER JOIN `image_gallery` ig ON i.`id` = ig.`image_id` WHERE ig.`gallery_id` = %s ORDER BY i.`id` DESC LIMIT %s, %s",
-            $gallery_id,
-            $start,
-            $prePage
-        );
+        if (Redis::exists("gallery:$gallery_id:show:images:$page"))
+        {
+            var_dump('redis getAllByGallery images');
+            return Redis::cached("gallery:$gallery_id:show:images:$page");
 
-        return $this->pdo->query($sql)->fetchAll();
+        }else {
+            $sql = sprintf("SELECT i.`slug`, i.`file_name` FROM `image` i INNER JOIN `image_gallery` ig ON i.`id` = ig.`image_id` WHERE ig.`gallery_id` = %s ORDER BY i.`id` DESC LIMIT %s, %s",
+                $gallery_id,
+                $start,
+                $prePage
+            );
+
+            $results = $this->pdo->query($sql)->fetchAll();
+            Redis::caching("gallery:$gallery_id:show:images:$page", $results);
+            var_dump('db getAllByGallery images');
+            return $results;
+        }
     }
 
 
@@ -80,7 +117,7 @@ class ImageModel extends Model
 
     public function insert()
     {
-        $data1 = [
+        $data = [
             'user_id' => $this->user_id,
             'file_name' => $this->file_name,
             'slug' => $this->slug,
@@ -90,13 +127,12 @@ class ImageModel extends Model
                 VALUES (:user_id, :file_name, :slug)";
 
         try {
-            $this->pdo->prepare($sql)->execute($data1);
+            $this->pdo->prepare($sql)->execute($data);
         }catch (\PDOException $e){
             return false;
         }
 
         $image_id = $this->pdo->lastInsertId();
-
         $data2 = [
             'image_id' => $image_id,
             'gallery_id' => $this->gallery_id,
@@ -106,7 +142,7 @@ class ImageModel extends Model
                 VALUES (:image_id, :gallery_id)";
 
         try {
-            $this->pdo->prepare($sql)->execute($data2);
+            return $this->pdo->prepare($sql)->execute($data2);
         }catch (\PDOException $e){
             return false;
         }

@@ -35,4 +35,19 @@ $router->post('/imgur/galleries/{$slug}/update', '\app\controllers\GalleryContro
 $router->get('/imgur/galleries/{$slug}', '\app\controllers\GalleryController@show');
 $router->post('/imgur/galleries/{$id}', '\app\controllers\GalleryController@delete');
 
+// Comment
+$router->post('/imgur/comments', '\app\controllers\CommentController@store');
+
+$router->get('/test', function (){
+    \app\models\Redis::caching('test', 'ovo je is redisa');
+    \app\models\Redis::caching('test:2', 'ovo je is test 2 redisa');
+    echo \app\models\Redis::cached('test').'<br>';
+    \app\models\Redis::reCaching('test', 'recachiran redis podatak');
+    echo \app\models\Redis::cached('test').'<br>';
+    \app\models\Redis::remove('test:*');
+    \app\models\Redis::remove('tes*');
+    echo \app\models\Redis::cached('test') ?? ('obrisan'.'<br>');
+    echo \app\models\Redis::cached('test:2') ?? ('obrisan'.'<br>');
+});
+
 $router->run();

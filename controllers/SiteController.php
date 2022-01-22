@@ -38,7 +38,7 @@ class SiteController extends Controller
             'url' => '/imgur'
         ];
 
-        $images = $this->imageM->getAll($start, $prePage);
+        $images = $this->imageM->getAll($start, $prePage, $page);
 
         $this->renderView('home/index', ['images' => $images, 'pagination' => $pagination]);
     }
@@ -65,7 +65,7 @@ class SiteController extends Controller
             'url' => '/imgur/galleries'
         ];
 
-        $galleries = $this->galleryM->getAll($start, $prePage);
+        $galleries = $this->galleryM->getAll($start, $prePage, $page);
 
         $cover = [];
 
@@ -99,7 +99,7 @@ class SiteController extends Controller
             'url' => '/imgur/profiles'
         ];
 
-        $users = $this->userM->getAll($start, $prePage);
+        $users = $this->userM->getAll($start, $prePage, $page);
 
         $this->renderView('home/profiles', ['users' => $users, 'pagination' => $pagination]);
     }

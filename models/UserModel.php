@@ -29,21 +29,47 @@ class UserModel extends Model
         return $this->pdo->query($sql)->fetch();
     }
 
-    public function getAll($start, $prePage)
+    public function getAll($start, $prePage, $page)
     {
-        if (in_array(Session::get('user')->role, ['admin', 'moderator'])){
-            $sql = sprintf("SELECT * FROM `user` LIMIT %s, %s",
-                $start,
-                $prePage
-            );
-        }else{
-            $sql = sprintf("SELECT * FROM `user` WHERE `active` = 1 AND `nsfw` = 0 LIMIT %s, %s",
-                $start,
-                $prePage
-            );
-        }
+        if (in_array(Session::get('user')->role, ['admin', 'moderator']))
+        {
+            if (Redis::exists("a:site:profiles:$page"))
+            {
+                var_dump('all users from redis');
+                return Redis::cached("a:site:profiles:$page");
 
-        return $this->pdo->query($sql)->fetchAll();
+            }else{
+                $sql = sprintf("SELECT * FROM `user` LIMIT %s, %s",
+                    $start,
+                    $prePage
+                );
+
+                $results = $this->pdo->query($sql)->fetchAll();
+
+                Redis::caching("a:site:profiles:$page", $results);
+                var_dump('all users from db');
+
+                return $results;
+
+            }
+        }else{
+            if (Redis::exists("u:site:profiles:$page"))
+            {
+                return Redis::cached("u:site:profiles:$page");
+
+            }else{
+                $sql = sprintf("SELECT * FROM `user` WHERE `active` = 1 AND `nsfw` = 0 LIMIT %s, %s",
+                    $start,
+                    $prePage
+                );
+
+                $results = $this->pdo->query($sql)->fetchAll();
+
+                Redis::caching("u:site:profiles:$page", $results);
+
+                return $results;
+            }
+        }
     }
 
     public function insert()
@@ -59,8 +85,30 @@ class UserModel extends Model
         $sql = "INSERT INTO user (username, email, password, role, api_key) VALUES (:username, :email, :password, :role, :api_key)";
 
         $this->pdo->prepare($sql)->execute($data);
+        Redis::remove("*:site:profiles:*");
 
         return $this->pdo->lastInsertId();
+    }
+
+    public function update($id)
+    {
+        $data = [
+            'username' => $this->username,
+            'email' => $this->email,
+            'active' => $this->active,
+            'nsfw' => $this->nsfw,
+            'role' => $this->role,
+            'id' => $id
+        ];
+
+        $sql = "UPDATE user SET username = :username, email = :email, active = :active, nsfw = :nsfw, role = :role WHERE id=:id";
+
+        try {
+            $this->pdo->prepare($sql)->execute($data);
+            return true;
+        }catch (\PDOException $e){
+            return false;
+        }
     }
 
     public function getTotal()
@@ -158,27 +206,6 @@ class UserModel extends Model
         }
         if ($this->confirm_password !== $this->password){
             $this->errors['$this->confirm_password'] = 'Password did not match. Please try again.';
-        }
-    }
-
-    public function update($id)
-    {
-        $data = [
-            'username' => $this->username,
-            'email' => $this->email,
-            'active' => $this->active,
-            'nsfw' => $this->nsfw,
-            'role' => $this->role,
-            'id' => $id
-        ];
-
-        $sql = "UPDATE user SET username = :username, email = :email, active = :active, nsfw = :nsfw, role = :role WHERE id=:id";
-
-        try {
-            $this->pdo->prepare($sql)->execute($data);
-            return true;
-        }catch (\PDOException $e){
-            return false;
         }
     }
 
