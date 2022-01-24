@@ -13,6 +13,7 @@ class DBconnection {
   {
       if(is_null(self::$instance)){
         self::$instance = new DBconnection();
+        self::connect();
       }
 
       return self::$instance;
@@ -24,7 +25,7 @@ class DBconnection {
 
   public function __clone(){}
 
-    public static function connect()
+  private static function connect()
   {
       self::$connection = new PDO($_ENV["DB_DSN"], $_ENV['DB_USER'], $_ENV['DB_PASSWORD']);
       self::$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

@@ -12,7 +12,6 @@ class Model
 
     public function __construct()
     {
-        DBConnection::connect();
         $this->db = DBConnection::getInstance();
         $this->pdo = $this->db->getConnection();
 

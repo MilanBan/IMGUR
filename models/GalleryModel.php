@@ -85,13 +85,11 @@ class GalleryModel extends Model
         if (in_array(Session::get('user')->role, ['admin', 'moderator'])) {
             if (Redis::exists("a:galleries:$id:cover"))
             {
-                var_dump('trigerovao iz redisa : '.$id);
                 return Redis::cached("a:galleries:$id:cover");
             } else {
                 $sql = "SELECT i.`file_name` FROM `image` i INNER JOIN `image_gallery` ig ON i.`id` = ig.`image_id` WHERE ig.`gallery_id` = '$id' ORDER BY i.`id` DESC LIMIT 1";
                 $results = $this->pdo->query($sql)->fetchColumn();
                 Redis::caching("a:galleries:$id:cover", $results);
-                var_dump('trigerovao iz db : '.$id);
 
                 return $results;
             }
