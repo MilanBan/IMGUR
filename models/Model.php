@@ -22,4 +22,9 @@ class Model
     {
         $this->session->destroy();
     }
+
+    public function updateSession($key, $value)
+    {
+        $this->session->update($key, $value);
+    }
 }

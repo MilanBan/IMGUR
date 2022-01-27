@@ -3,7 +3,6 @@
 use app\models\Session;
 
 ?>
-
     <div class="d-flex flex-wrap justify-content-center">
         <h1><?= Session::getFlash('welcome') ?></h1>
     </div>

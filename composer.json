@@ -17,6 +17,7 @@
         "ext-json": "*",
         "ext-iconv": "*",
         "predis/predis": "^1.1",
-        "vlucas/phpdotenv": "^5.4"
+        "vlucas/phpdotenv": "^5.4",
+        "nesbot/carbon": "^2.56"
     }
 }

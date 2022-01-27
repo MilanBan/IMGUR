@@ -34,6 +34,10 @@ class Session {
     public static function get( $key ) {
         return $_SESSION[$key] ?? false;
     }
+    public function update( $key, $value ) {
+        unset( $_SESSION[$key] );
+        $_SESSION[$key] = $value;
+    }
 
     public function remove( $key ) {
         unset( $_SESSION[$key] );

@@ -6,6 +6,11 @@ use app\models\Session;
 ?>
 <div class="d-flex flex-wrap justify-content-center">
     <div class="border-bottom rounded-pill">
+        <?php if (Session::getFlash('msg')): ?>
+        <div class="p-3 bg-success text-white">
+            <h3 class=""><?= Session::getFlash('msg') ?></h3>
+        </div>
+        <?php endif; ?>
         <h1 class="text-center mt-5">Profile: <strong><?= ucwords($data['user']->username); ?></strong></h1>
        <?php if (Session::get('user')->role !== 'user' || Session::get('user')-> $data['user']->id) : ?>
         <p class="text-center text-muted m-1 m-3">(<?= $data['user']->role; ?>)</p>

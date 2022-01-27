@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\models\Helper;
 use app\models\Session;
+use app\models\SubscriptionModel;
 use app\models\UserModel;
 
 class AuthController extends Controller
@@ -27,6 +28,33 @@ class AuthController extends Controller
                 $user = $userM->getUser(['email', $userM->email]);
                 Session::set('user', $user);
                 Session::set('username', Helper::encode($user->username));
+
+                $subM = new SubscriptionModel();
+                $sub = $subM->getCurrentPlan($user->id); // poslednji koji nije na hold-u
+
+                if ($sub->plan == 0){ // ako je free, redirekt na kupovinu pretplate
+
+                    if (!$sub->id){
+                        $subM->setOnFree();
+                    }
+
+                    Session::set('subs', 'free');
+                    return $this->redirect('imgur/profiles/' . Session::get('username') . '/subscription');
+                }
+
+                if (!$subM->checkSubscription($sub->subscription_expire, $sub->id)) { //ako ima pretplatu ali je istekla
+                    Session::set('subs', 'free');
+                    return $this->redirect('imgur/profiles/' . Session::get('username') . '/subscription');
+                }
+
+                $plan = [
+                    0 => 'free',
+                    1 => '1 month',
+                    6 => '6 months',
+                    12 => '12 months'
+                ];
+
+                Session::set('subs', $plan[$sub->plan]); // ako je pretplata vazeca
                 Session::setFlash('welcome', '<small>Welcome back</small> '.$user->username);
                 $this->redirect('imgur/profiles/'.Session::get('username'));
             }
@@ -53,7 +81,12 @@ class AuthController extends Controller
                 Session::set('user', $user);
                 Session::set('username', Helper::encode($user->username));
                 Session::setFlash('welcome', '<small>Welcome</small> '.$user->username);
-                $this->redirect('imgur/profiles/'.Session::get('username'));
+
+                $subM = new SubscriptionModel();
+                $subM->setOnFree();
+                Session::set('subs', 'free');
+
+                $this->redirect('imgur/profiles/' . Session::get('username') . '/subscription');
             }
         }
     }

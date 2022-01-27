@@ -32,8 +32,11 @@ use app\models\Session;
         </ul>
         <ul class="navbar-nav my-2 my-lg-0">
             <?php if (Session::get('user')): ?>
+                <a class="nav-link" href="/imgur/profiles/<?= Session::get('username') ?>/subscription">
+                    plan: <?= (Session::get('subs') == 'free') ? 'Subscription' : Session::get('subs')?> <small class="<?= (Session::get('subs') == 'free') ? 'text-danger' : 'text-success'?>">(<?= Session::get('expire') ? ('expire in '.Session::get('expire')) : 'free' ?>)</small>
+                </a>
                 <div class="dropdown">
-                    <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <?= ucwords(Session::get('user')->username) ?>
                         <?php if(Session::get('user')->role == 'admin') : ?>
                             <small>(A)</small>

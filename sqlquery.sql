@@ -23,7 +23,7 @@ update image set file_name = concat('https://picsum.photos/200/300?random=', id)
 --user password updated to 'password'
 update user set password = '$2y$10$fsgdvcrvir/ggyu20oe/xuyqkmh2zdjaapwwrtryxpq8p.lcuuw1e'
 
---make uniquee slug for gallery
+--make unique slug for gallery
 update gallery set `slug` = concat(`slug`, `id`)
 
 --make unique slug for image
@@ -37,3 +37,15 @@ create index idx_slug on image (slug)
 
 --create index for gallery - slug
 create index idx_slug on gallery (slug)
+
+--create subscription table
+create table if not exists `subscription` (
+    `id` int primary key auto_increment,
+    `user_id` int(11) not null,
+    `plan` tinyint(1) default 0,
+    `subscriber` boolean default false,
+    `subscription_expire` data,
+    `hold` boolean default 0)
+
+--drop doctrine_migration_versions table
+drop table doctrine_migration_versions
