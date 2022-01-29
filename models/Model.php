@@ -7,7 +7,7 @@ use app\database\DBconnection;
 class Model
 {
     protected $db;
-    protected $pdo;
+    public $pdo;
     public $session = null;
 
     public function __construct()

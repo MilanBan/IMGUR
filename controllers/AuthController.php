@@ -84,7 +84,6 @@ class AuthController extends Controller
 
                 $subM = new SubscriptionModel();
                 $subM->setOnFree();
-                Session::set('subs', 'free');
 
                 $this->redirect('imgur/profiles/' . Session::get('username') . '/subscription');
             }

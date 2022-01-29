@@ -3,7 +3,6 @@
 namespace app\models;
 
 use Carbon\Carbon;
-use DateTimeInterface;
 
 class SubscriptionModel extends Model
 {
@@ -100,7 +99,8 @@ class SubscriptionModel extends Model
             'subscription_expire' => $this->subscription_expire
         ];
 
-        if ($last_sub->plan == 0){
+        if ($last_sub->plan == 0){ // free
+
             $subscription_expire = Carbon::createFromFormat("Y-m-d",$this->subscription_expire);
             $diff = $subscription_expire->diffInDays(Carbon::now());
             $plan = [
@@ -113,35 +113,56 @@ class SubscriptionModel extends Model
             Session::set('subs', $plan[$data['plan']]);
             Session::set('expire', "$diff days");
             $sql = "UPDATE subscription SET plan=:plan, subscriber=:subscriber ,subscription_expire=:subscription_expire WHERE user_id = :user_id";
-        }else{
+        }else{ // nije bio free
             if ($last_sub->subscriber){ // aktivan je
                 $subscription_expire = Carbon::createFromFormat("Y-m-d",$last_sub->subscription_expire);
                 $diff = $subscription_expire->diffInDays(Carbon::now());
 
-                if ($diff>0){
+                if ($diff>0)
+                {
+                    if ($last_sub->plan < $this->plan){ // prelazak na veci plan
+                        $this->pdo->prepare($sql = "UPDATE subscription SET subscriber = 0 WHERE id = $last_sub->id")->execute();
+                        $sql = "INSERT INTO subscription (user_id, plan, subscriber, subscription_expire) VALUES (:user_id, :plan, :subscriber, :subscription_expire)";
 
-                    if ($this->getOnHoldPlan(Session::get('user')->id)){
-                        Session::setFlash('msg','You already have the next subscription purchased');
-                        return;
+                        $new_subscription_expire = Carbon::createFromFormat("Y-m-d", $this->subscription_expire)->addDays($diff);
+                        $data['subscription_expire'] = $new_subscription_expire->format("Y-m-d");
+
+                        $diff = $new_subscription_expire->diffInDays(Carbon::now());
+                        $plan = [
+                            0 => 'free',
+                            1 => '1 month',
+                            6 => '6 months',
+                            12 => '12 months'
+                        ];
+
+                        Session::set('subs', $plan[$this->plan]);
+                        Session::set('expire', "$diff days");
+                    }else{ // na manji
+
+                        if ($this->getOnHoldPlan(Session::get('user')->id)){ // ogranicava na samo jednu pretplatu unapred
+                            Session::setFlash('msg','You already have the next subscription purchased');
+                            return;
+                        }
+                        // insertuje novi plan i stavlja ga na cekanje
+                        $new_subscription_expire = Carbon::createFromFormat("Y-m-d", $this->subscription_expire)->addDays($diff);
+                        $data['subscription_expire'] = $new_subscription_expire->format("Y-m-d");
+                        $data['subscriber'] = 0;
+                        $data['hold'] = 1;
+                        $plan = [
+                            0 => 'free',
+                            1 => '1 month',
+                            6 => '6 months',
+                            12 => '12 months'
+                        ];
+
+                        Session::set('subs', $plan[$last_sub->plan]);
+                        Session::set('expire', "$diff days");
+
+                        $sql = "INSERT INTO subscription (user_id, plan, subscriber, subscription_expire, hold) VALUES (:user_id, :plan, :subscriber, :subscription_expire, :hold)";
                     }
 
-                    $new_subscription_expire = Carbon::createFromFormat("Y-m-d", Carbon::now()->format("Y-m-d"))->addDays($diff);
-                    $data['subscription_expire'] = $new_subscription_expire->format("Y-m-d");
-                    $data['subscriber'] = 0;
-                    $data['hold'] = 1;
-                    $plan = [
-                        0 => 'free',
-                        1 => '1 month',
-                        6 => '6 months',
-                        12 => '12 months'
-                    ];
-
-                    Session::set('subs', $plan[$last_sub->plan]);
-                    Session::set('expire', "$diff days");
-
-                    $sql = "INSERT INTO subscription (user_id, plan, subscriber, subscription_expire, hold) VALUES (:user_id, :plan, :subscriber, :subscription_expire, :hold)";
                 }
-            }else{
+            }else{ // ako je istekao
                 $sql = "INSERT INTO subscription (user_id, plan, subscriber, subscription_expire) VALUES (:user_id, :plan, :subscriber, :subscription_expire)";
 
                 $subscription_expire = Carbon::createFromFormat("Y-m-d",$this->subscription_expire);

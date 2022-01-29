@@ -115,4 +115,10 @@ class UserController extends Controller
 
         $this->redirect('imgur/profiles/');
     }
+
+    public function forAll()
+    {
+        $ids = $this->userM->allIds();
+var_dump($ids); exit();
+    }
 }

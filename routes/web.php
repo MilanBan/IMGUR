@@ -2,9 +2,14 @@
 
 $router = new \Bramus\Router\Router();
 
+// Seeder
+$router->get( '/seed', '\app\controllers\SeederController@seed' );
+
+
 // SubscriptionModel
 $router->get('/imgur/profiles/{$username}/subscription', '\app\controllers\SubscriptionController@create');
 $router->post('/imgur/profiles/{$username}/subscription', '\app\controllers\SubscriptionController@store');
+$router->get('/imgur/profiles/{$username}/subscription/history', '\app\controllers\SubscriptionController@history');
 
 // User
 $router->get( '/imgur/profiles/{$username}/edit', '\app\controllers\UserController@edit' );
