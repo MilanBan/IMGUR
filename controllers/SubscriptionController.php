@@ -2,7 +2,9 @@
 
 namespace app\controllers;
 
+use app\adapters\PaymentAdapter;
 use app\models\Helper;
+use app\models\payments\CreditCard;
 use app\models\Session;
 use app\models\SubscriptionModel;
 use app\models\UserModel;
@@ -36,6 +38,12 @@ class SubscriptionController extends Controller
      */
     public function store()
     {
+        $payment = new PaymentAdapter(new CreditCard(Session::get('user')->payment));
+
+        if (!$payment->checkPayment()){
+            return $this->redirect('imgur/profiles/'.Session::get('username'));
+        }
+
         $now = Carbon::now()->format('Y-m-d');
 
         $this->subscriptionM->plan = $_POST['plan'] ?? 0;
@@ -58,7 +66,9 @@ class SubscriptionController extends Controller
             $this->subscriptionM->subscriber = false;
         }
 
-        $this->subscriptionM->renewSubscribe();
+        if ($this->subscriptionM->renewSubscribe()){
+            $payment->doPayment();
+        }
 
         $this->redirect('imgur/profiles/'.Session::get('username'));
     }

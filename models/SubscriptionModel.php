@@ -2,9 +2,10 @@
 
 namespace app\models;
 
+use app\interfaces\SubscriptionInterface;
 use Carbon\Carbon;
 
-class SubscriptionModel extends Model
+class SubscriptionModel extends Model implements SubscriptionInterface
 {
     public int $user_id;
     public $plan;
@@ -184,7 +185,11 @@ class SubscriptionModel extends Model
                 Session::set('expire', "$diff days");
             }
         }
-
-        $this->pdo->prepare($sql)->execute($data);
+        try {
+            $this->pdo->prepare($sql)->execute($data);
+            return true;
+        }catch (\Exception $e){
+            return false;
+        }
     }
 }
