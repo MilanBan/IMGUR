@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use Carbon\Carbon;
+
 class ImageModel extends Model
 {
     public function getAll($start, $prePage, $page)
@@ -117,14 +119,29 @@ class ImageModel extends Model
 
     public function insert()
     {
+        $limit = $this->checkLimit();
+
+        $plan_limit = [
+            'free' => 5,
+            '1 month' => 20,
+            '6 months' => 30,
+            '12 months' => 50
+        ];
+
+        if ($limit >= $plan_limit[Session::get('subs')]){
+            Session::setFlash('msg', 'You used the upload limit. Upgrade the subscription plan to increase the limit.');
+            return false;
+        }
+
         $data = [
             'user_id' => $this->user_id,
             'file_name' => $this->file_name,
             'slug' => $this->slug,
+            'created_at' => Carbon::now()->format("Y-m-d")
         ];
 
-        $sql = "INSERT INTO image (user_id, file_name, slug) 
-                VALUES (:user_id, :file_name, :slug)";
+        $sql = "INSERT INTO image (user_id, file_name, slug, created_at) 
+                VALUES (:user_id, :file_name, :slug, :created_at)";
 
         try {
             $this->pdo->prepare($sql)->execute($data);
@@ -152,5 +169,34 @@ class ImageModel extends Model
     {
         $sql = "DELETE FROM `image` WHERE `id` = $id";
         $this->pdo->query($sql)->execute();
+    }
+
+    public function checkLimit()
+    {
+        $months = Session::get('sub-data')['months'];
+        $expire = Session::get('sub-data')['expire'];
+        $id = Session::get('user')->id;
+
+        if (Session::get('subs') == 'free')
+        {
+            $start_of_month = (new Carbon('first day of this month'))->format("Y-m-d");
+            $end_of_month = Carbon::now()->format('Y-m-d');
+
+        }else{
+
+            $end_of_month = Carbon::createFromFormat("Y-m-d",$expire)->subMonths($months-1)->format('Y-m-d');
+            $start_of_month = Carbon::createFromFormat("Y-m-d",$expire)->subMonths($months)->format('Y-m-d');
+            $now = Carbon::now()->format('Y-m-d');
+
+            while ($end_of_month < $now){
+                $end_of_month = Carbon::createFromFormat("Y-m-d",$end_of_month)->addMonth()->format('Y-m-d');
+                $start_of_month = Carbon::createFromFormat("Y-m-d",$start_of_month)->addMonth()->format('Y-m-d');
+            }
+
+        }
+        $sql = "SELECT count(*) FROM image WHERE user_id = $id AND created_at BETWEEN '$start_of_month' AND '$end_of_month'";
+
+        $count = $this->pdo->query($sql)->fetchColumn();
+        return $count;
     }
 }

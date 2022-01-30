@@ -13,7 +13,10 @@ use app\models\Session;
                 <div class="card-body">
                     <h5 class="card-title"><?= $user->username ?></h5>
                     <?php if (Session::get('user')->id == $user->id || in_array(Session::get('user')->role, ['moderator', 'admin'])) : ?>
+                    <div class="btn-group d-flex justify-content-around m-5">
                         <a class="btn btn-sm btn-warning" href="/imgur/profiles/<?= Helper::encode($user->username) ?>/edit">Edit</a>
+                        <a class="btn btn-sm btn-success" href="/imgur/profiles/<?= Helper::encode($user->username) ?>/subscription/history">Subscription History</a>
+                    </div>
                     <?php endif ?>
                 </div>
             </div>

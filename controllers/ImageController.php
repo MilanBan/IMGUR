@@ -101,7 +101,10 @@ class ImageController extends Controller
             $this->imageM->gallery_id = $_POST['gallery_id'];
             $this->imageM->user_id = Session::get('user')->id;
 
-            $this->imageM->insert();
+            $result = $this->imageM->insert();
+            if($result == false){
+                $this->refresh();
+            }
             $gallery_id = $this->imageM->gallery_id;
             Redis::remove('*:images:*');
             if ($this->imageM->gallery_id){

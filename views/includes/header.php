@@ -33,7 +33,16 @@ use app\models\Session;
         <ul class="navbar-nav my-2 my-lg-0">
             <?php if (Session::get('user')): ?>
                 <div class="dropdown">
-                    <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button class="btn btn-light dropdown-toggle" type="button" id="dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        plan: <?= (Session::get('subs') == 'free') ? 'Subscription' : Session::get('subs')?> <small class="<?= (Session::get('subs') == 'free') ? 'text-danger' : 'text-success'?>">(<?= Session::get('expire') ? ('expire in '.Session::get('expire')) : 'free' ?>)</small>
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdown">
+                        <a class="dropdown-item" href="/imgur/profiles/<?= Session::get('username') ?>/subscription/history">Subscription History</a>
+                        <a class="dropdown-item" href="/imgur/profiles/<?= Session::get('username') ?>/subscription/"><?= Session::get('subs') == 'free' ? 'Buy Subscription' : 'Renew Subscription'?></a>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <?= ucwords(Session::get('user')->username) ?>
                         <?php if(Session::get('user')->role == 'admin') : ?>
                             <small>(A)</small>

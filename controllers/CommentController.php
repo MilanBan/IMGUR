@@ -3,7 +3,6 @@
 namespace app\controllers;
 
 use app\models\CommentModel;
-use app\models\Redis;
 use app\models\Session;
 
 class CommentController extends Controller

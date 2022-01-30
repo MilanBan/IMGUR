@@ -7,6 +7,7 @@ use app\models\Helper;
 use app\models\ModeratorLogModel;
 use app\models\Redis;
 use app\models\Session;
+use app\models\SubscriptionModel;
 use app\models\UserModel;
 
 class UserController extends Controller
@@ -15,17 +16,27 @@ class UserController extends Controller
     private UserModel $userM;
     private GalleryModel $galleryM;
     private ModeratorLogModel $moderatorLogM;
+    private SubscriptionModel $subscriptionM;
 
     public function __construct()
     {
         $this->userM = new UserModel();
         $this->galleryM = new GalleryModel();
         $this->moderatorLogM = new ModeratorLogModel();
+        $this->subscriptionM = new SubscriptionModel();
     }
 
     public function show($username)
     {
         $user = $this->userM->getUser(['username', Helper::decode($username)]);
+
+        $currentPlan = $this->subscriptionM->getCurrentPlan($user->id);
+        $history = $this->subscriptionM->getSubscriptionHistory($user->id);
+
+        $subscription = [
+            'currentPlan' => $currentPlan,
+            'history' => $history
+        ];
 
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $prePage = isset($_GET['pre-page']) && $_GET['pre-page'] <= 50 ? (int)$_GET['pre-page'] : 20;
@@ -103,5 +114,11 @@ class UserController extends Controller
         Redis::remove("*:profiles:*");
 
         $this->redirect('imgur/profiles/');
+    }
+
+    public function forAll()
+    {
+        $ids = $this->userM->allIds();
+var_dump($ids); exit();
     }
 }

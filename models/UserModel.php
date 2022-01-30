@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use Carbon\Carbon;
+
 class UserModel extends Model
 {
     public string $username;
@@ -208,6 +210,4 @@ class UserModel extends Model
             $this->errors['$this->confirm_password'] = 'Password did not match. Please try again.';
         }
     }
-
-
 }

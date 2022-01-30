@@ -2,6 +2,15 @@
 
 $router = new \Bramus\Router\Router();
 
+// Seeder
+$router->get( '/seed', '\app\controllers\SeederController@seed' );
+
+
+// SubscriptionModel
+$router->get('/imgur/profiles/{$username}/subscription', '\app\controllers\SubscriptionController@create');
+$router->post('/imgur/profiles/{$username}/subscription', '\app\controllers\SubscriptionController@store');
+$router->get('/imgur/profiles/{$username}/subscription/history', '\app\controllers\SubscriptionController@history');
+
 // User
 $router->get( '/imgur/profiles/{$username}/edit', '\app\controllers\UserController@edit' );
 $router->post( '/imgur/profiles/{$username}/update', '\app\controllers\UserController@update' );
@@ -38,16 +47,6 @@ $router->post('/imgur/galleries/{$id}', '\app\controllers\GalleryController@dele
 // Comment
 $router->post('/imgur/comments', '\app\controllers\CommentController@store');
 
-$router->get('/test', function (){
-    \app\models\Redis::caching('test', 'ovo je is redisa');
-    \app\models\Redis::caching('test:2', 'ovo je is test 2 redisa');
-    echo \app\models\Redis::cached('test').'<br>';
-    \app\models\Redis::reCaching('test', 'recachiran redis podatak');
-    echo \app\models\Redis::cached('test').'<br>';
-    \app\models\Redis::remove('test:*');
-    \app\models\Redis::remove('tes*');
-    echo \app\models\Redis::cached('test') ?? ('obrisan'.'<br>');
-    echo \app\models\Redis::cached('test:2') ?? ('obrisan'.'<br>');
-});
+
 
 $router->run();

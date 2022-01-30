@@ -7,7 +7,7 @@ use app\database\DBconnection;
 class Model
 {
     protected $db;
-    protected $pdo;
+    public $pdo;
     public $session = null;
 
     public function __construct()
@@ -21,5 +21,10 @@ class Model
     public function deleteSession()
     {
         $this->session->destroy();
+    }
+
+    public function updateSession($key, $value)
+    {
+        $this->session->update($key, $value);
     }
 }
