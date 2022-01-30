@@ -4,9 +4,10 @@ use app\models\Session;
 
 ?>
 <div class="d-flex flex-wrap justify-content-center">
-<?php if ( Session::getFlash('delete') ) : ?>
-    <div class="d-flex justify-content-center bg-success p-3 m-3 rounded">
+<?php if ( Session::getFlash('delete') || Session::getFlash('msg')) : ?>
+    <div class="d-flex justify-content-center <?= Session::getFlash('delete') ? 'bg-success' : 'bg-warning' ?> p-3 m-3 rounded">
         <?= Session::getFlash('delete') ?>
+        <?= Session::getFlash('msg') ?>
     </div>
 <?php endif; ?>
 </div>

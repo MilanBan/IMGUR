@@ -42,7 +42,9 @@ $plan = [
             </table>
         </div>
         <div class="card-footer text-muted">
+            <?php if($data['user']->id == Session::get('user')->id):?>
             <a class="btn btn-sm btn-primary" href="/imgur/profiles/<?= Session::get('username') ?>/subscription/"><?= Session::get('subs') == 'free' ? 'Buy now' : 'Renew Subscription'?></a>
+            <?php endif; ?>
         </div>
     </div>
 </div>

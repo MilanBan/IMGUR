@@ -75,6 +75,8 @@ class SubscriptionModel extends Model
                     12 => '12 months'
                 ];
                 Session::set('subs', $plan[$next->plan]);
+                Session::set('sub-data', ['months' => $next->plan, 'expire' => $next->subscription_expire]);
+
             }else{
                 $this->setOnFree();
             }
@@ -136,6 +138,7 @@ class SubscriptionModel extends Model
                         ];
 
                         Session::set('subs', $plan[$this->plan]);
+                        Session::set('sub-data', ['months' => $this->plan, 'expire' => $this->subscription_expire]);
                         Session::set('expire', "$diff days");
                     }else{ // na manji
 
@@ -156,6 +159,7 @@ class SubscriptionModel extends Model
                         ];
 
                         Session::set('subs', $plan[$last_sub->plan]);
+                        Session::set('sub-data', ['months' => $last_sub->plan, 'expire' => $last_sub->subscription_expire]);
                         Session::set('expire', "$diff days");
 
                         $sql = "INSERT INTO subscription (user_id, plan, subscriber, subscription_expire, hold) VALUES (:user_id, :plan, :subscriber, :subscription_expire, :hold)";
@@ -176,7 +180,7 @@ class SubscriptionModel extends Model
                 ];
 
                 Session::set('subs', $plan[$this->plan]);
-
+                Session::set('sub-data', ['months' => $this->plan, 'expire' => $this->subscription_expire]);
                 Session::set('expire', "$diff days");
             }
         }

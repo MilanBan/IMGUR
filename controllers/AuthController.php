@@ -55,6 +55,7 @@ class AuthController extends Controller
                 ];
 
                 Session::set('subs', $plan[$sub->plan]); // ako je pretplata vazeca
+                Session::set('sub-data', ['months' => $sub->plan, 'expire' => $sub->subscription_expire]);
                 Session::setFlash('welcome', '<small>Welcome back</small> '.$user->username);
                 $this->redirect('imgur/profiles/'.Session::get('username'));
             }

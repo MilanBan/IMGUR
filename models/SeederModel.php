@@ -19,7 +19,6 @@ class SeederModel extends Model
     {
         $sql = "SELECT id FROM `user` ORDER BY id";
         $ids = $this->pdo->query($sql)->fetchAll();
-//var_dump($ids); exit();
         $data = [
             'user_id' => 0,
             'plan' => 0,

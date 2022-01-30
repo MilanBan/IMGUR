@@ -47,5 +47,14 @@ create table if not exists `subscription` (
     `subscription_expire` data,
     `hold` boolean default 0)
 
+-- add fk in subscription - user_id
+alter table subscription add foreign key (user_id) references user(id);
+
+-- add payment in user table
+ALTER TABLE user ADD  payment boolean default true;
+
+-- add created_at in image table
+ALTER TABLE image ADD created_at date;
+
 --drop doctrine_migration_versions table
 drop table doctrine_migration_versions
