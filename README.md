@@ -1,6 +1,6 @@
 # IMGUR (clone) 
 
-##After clone project:
+## After clone project:
 
 ```
 1. run `composer install`
@@ -11,12 +11,12 @@
 6. enter in browser route `http://localhost:8080/imgur`
 ```
 
-##to modify the database
+## to modify the database
 ```
 1. run sql queries from `sqlquery.sql` file
 2. to run seeder enter route `http://localhost:8080/seed`
 ```
 
-##info
+## info
 - Project use redis (requires to be installed redis on OS)
 - Default password for users from database is `password`
