@@ -5,6 +5,8 @@ $router = new \Bramus\Router\Router();
 // Seeder
 $router->get( '/seed', '\app\controllers\SeederController@seed' );
 
+// Advertising
+$router->get( '/advertising/{$name}','\app\controllers\AdvertisingController@countClicks');
 
 // SubscriptionModel
 $router->get('/imgur/profiles/{$username}/subscription', '\app\controllers\SubscriptionController@create');

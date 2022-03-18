@@ -58,3 +58,39 @@ ALTER TABLE image ADD created_at date;
 
 --drop doctrine_migration_versions table
 drop table doctrine_migration_versions
+
+-- create banner table
+create table if not exists banner (
+    id int primary key auto_increment,
+    name varchar(125),
+    image varchar(255),
+    url varchar(255)
+    );
+
+-- create banner_stats table
+create table if not exists `banner_stats` (
+    `id` int primary key auto_increment,
+    `banner_id` int,
+    foreign key (banner_id) references banner(id),
+    `viewed` int,
+    `clicked` int,
+    `date` date
+)
+
+-- create sector_stats table
+create table if not exists `sector_stats` (
+    `id` int primary key auto_increment,
+    `banner_id` int,
+    foreign key (banner_id) references banner(id),
+    `h_viewed` int,
+    `h_clicked` int,
+    `ls_viewed` int,
+    `ls_clicked` int,
+    `c_viewed` int,
+    `c_clicked` int,
+    `rs_viewed` int,
+    `rs_clicked` int,
+    `f_viewed` int,
+    `f_clicked` int,
+    `date` date
+)

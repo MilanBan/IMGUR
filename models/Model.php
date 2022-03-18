@@ -14,7 +14,6 @@ class Model
     {
         $this->db = DBConnection::getInstance();
         $this->pdo = $this->db->getConnection();
-
         $this->session = new Session();
     }
 

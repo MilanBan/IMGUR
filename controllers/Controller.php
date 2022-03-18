@@ -4,6 +4,7 @@ namespace app\controllers;
 
 class Controller
 {
+
     public function renderView($view, $data = [])
     {
         if (!file_exists(__DIR__."/../views/$view.php"))
