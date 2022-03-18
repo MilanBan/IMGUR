@@ -33,6 +33,20 @@ class Redis
         self::$cache->expire($key, (5*60));
     }
 
+    public static function permanentCaching($key, $value)
+    {
+        self::getInstance();
+
+        self::$cache->set($key, json_encode($value));
+    }
+
+    public static function increment($key)
+    {
+        self::getInstance();
+
+        self::$cache->incr($key);
+    }
+
     public static function cached($key)
     {
         return json_decode(self::$cache->get($key));

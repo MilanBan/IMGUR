@@ -5,9 +5,15 @@ namespace app\models;
 class Session {
 
     protected const FLASH_KEY = 'flash_messages';
+    protected static bool $start = false;
 
     public function __construct() {
-        session_start();
+        if (!self::$start){
+            session_start();
+            self::$start = true;
+            $ad = Advertising::getInstance();
+            $ad->nextRendering();
+        }
         $flashMessages = $_SESSION[self::FLASH_KEY] ?? [];
         foreach ( $flashMessages as $key => &$flashMessage ) {
             $flashMessage['remove'] = true;

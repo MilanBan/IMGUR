@@ -1,5 +1,9 @@
 <?php
+
+use app\models\Advertising;
 use app\models\Session;
+use app\models\Redis;
+var_dump(Advertising::$banners['h']->image);
 ?>
 <!doctype html>
 <html lang="en">
@@ -71,3 +75,35 @@ use app\models\Session;
     </div>
 </nav>
 <div class="container-fluid">
+    <div class="row">
+        <div class="col-2 bg-primary vh-">
+            <a href="/advertising/adv-left" >
+                <div class="d-flex justify-content-center vh-90">
+                    <div class="card bg-dark text-center text-white mtb-auto h-90" style="height: 100%; width: 100%;">
+                        <img src="<?= Advertising::$banners['ls']->image ?>" class="card-img" alt="" >
+                        <div class="card-img-overlay">
+                            <p class="card-title text-right">ad</p>
+                            <h1 class="card-title">L <?= Redis::exists('sector:clicks:adv-left') ? Redis::cached('sector:clicks:adv-left'):'' ?></h1>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-8">
+            <div class="row">
+                <div class="col-12 bg-warning max-vh-10" style="height: 100px;" >
+                    <a href="/advertising/adv-header">
+                        <div class="d-flex justify-content-center">
+                            <div class="card bg-dark text-center text-white" style="height: 100px; width: 100%;" >
+                                <img src="<?= Advertising::$banners['h']->image ?>" style="height: 100px;">
+                                <div class="card-img-overlay p-2">
+                                    <p class="card-title text-right">ad</p>
+                                    <h1 class="card-title">H <?= Redis::exists('sector:clicks:adv-header') ? Redis::cached('sector:clicks:adv-header'):'' ?></h1>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-12">
+
+
